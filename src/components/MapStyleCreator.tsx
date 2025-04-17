@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import CategoryInput from './CategoryInput';
+import CategorySelect from './CategorySelect';
 import ColorInput from './ColorInput';
 import { Button } from 'antd';
+import './MapStyleCreator.css';
 
 const MapStyleCreator = () => {
   const [category, setCategory] = useState('');
@@ -26,8 +27,8 @@ const MapStyleCreator = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: '300px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
-      <CategoryInput value={category} onChange={setCategory} />
+    <form onSubmit={handleSubmit} className="map-style-creator-form">
+      <CategorySelect value={category} onChange={setCategory} />
       <div style={{ marginBottom: '16px' }}>
         <p style={{ marginBottom: '8px' }}>自分で色を設定する</p>
         {['color1', 'color2', 'color3'].map((color) => (
@@ -41,6 +42,9 @@ const MapStyleCreator = () => {
       </div>
       <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
         適用する
+      </Button>
+      <Button type="default" htmlType="submit" style={{ width: '100%', marginTop: '8px' }}>
+        styleを書き出す
       </Button>
     </form>
   );

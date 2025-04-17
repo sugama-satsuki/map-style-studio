@@ -25,10 +25,13 @@ const Demo = () => {
   return (
     <div className="layout">
       <div className="layout__map-area" ref={mapContainerRef}>
-        {/* 地図がここに表示されます */}
       </div>
       <div className="layout__form-area">
-        <h1 className="layout__title">MAP STYLE CREATER</h1>
+        <h1 className="layout__title">
+            <span>MAP</span>
+            <span>STYLE</span>
+            <span>CREATER</span>
+        </h1>
         <MapStyleCreator />
       </div>
     </div>
