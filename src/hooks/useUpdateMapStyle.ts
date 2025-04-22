@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { StyleSpecification } from 'maplibre-gl';
+import { TinyColor } from '@ctrl/tinycolor';
+
 
 interface Colors {
   [key: string]: string;
@@ -8,6 +10,22 @@ interface Colors {
 const useUpdateMapStyle = (initialStyle: StyleSpecification | undefined, colors: Colors) => {
     
   const [updatedStyle, setUpdatedStyle] = useState<StyleSpecification | undefined>(initialStyle);
+  const { primary, secondary } = colors;
+
+  const adjustBackgroundColor = (primaryColor: string): string => {
+    // 例: primaryColorを少し薄くする
+    return new TinyColor(primaryColor).lighten(50).desaturate(10).toString();
+  };
+
+  const adjustWaterColor = (primaryColor: string, secondaryColor?: string): string => {
+    // 例: primaryColorに青みを加える
+    return new TinyColor(primaryColor).desaturate(60).lighten(35).toString();
+  };
+
+  const adjustRoadColor = (secondaryColor: string): string => {
+    // 例: secondaryColorを少し濃くする
+    return new TinyColor(secondaryColor).darken(10).desaturate(50).toString();
+  };
 
   useEffect(() => {
     if(!initialStyle) { return; }
@@ -15,22 +33,45 @@ const useUpdateMapStyle = (initialStyle: StyleSpecification | undefined, colors:
     const newStyle = { ...initialStyle };
 
     newStyle.layers = newStyle.layers.map((layer) => {
-      if (layer.paint) {
-        if (colors.color1 && (layer.paint as Record<string, string>)['fill-color']) {
-          (layer.paint as Record<string, string>)['fill-color'] = colors.color1;
-        }
-        if (colors.color2 && (layer.paint as Record<string, string>)['line-color']) {
-          (layer.paint as Record<string, string>)['line-color'] = colors.color2;
-        }
-        if (colors.color3 && (layer.paint as Record<string, string>)['background-color']) {
-            (layer.paint as Record<string, string>)['background-color'] = colors.color3;
-        }
+      if (layer.id === 'background') {
+        layer.paint = {
+          ...layer.paint,
+          'background-color': adjustBackgroundColor(primary),
+        };
+      }
+
+      if (layer.id === 'road-primary-highway') {
+        layer.paint = {
+          ...layer.paint,
+          'line-color': primary,
+        };
+      }
+  
+      if (layer.id === 'water-default') {
+        layer.paint = {
+          ...layer.paint,
+          'fill-color': adjustWaterColor(primary, secondary),
+        };
+      }
+  
+      if (layer.id === 'road-primary') {
+        layer.paint = {
+          ...layer.paint,
+          'line-color': adjustRoadColor(secondary || primary),
+        };
+      }
+  
+      if (layer.id === 'building-default') {
+        layer.paint = {
+          ...layer.paint,
+          'fill-color': adjustRoadColor(secondary || primary),
+        };
       }
       return layer;
     });
 
     setUpdatedStyle(newStyle);
-  }, [colors, initialStyle]);
+  }, [colors, initialStyle, primary, secondary]);
 
   return updatedStyle;
 };

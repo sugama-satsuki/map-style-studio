@@ -2,29 +2,39 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MapStyleCreator } from '../../src';
 import { createRoot } from 'react-dom/client';
 import maplibregl, { StyleSpecification } from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css'; // MapLibreのCSSをインポート
+import 'maplibre-gl/dist/maplibre-gl.css';
+import styleJson from './style.json';
+
 
 const Demo = () => {
+
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const [mapStyle, setMapStyle] = useState<StyleSpecification | undefined>(undefined);
+  const [map, setMap] = useState<maplibregl.Map | null>(null);
+
+  const onChangeMapStyle = (newMapStyle: StyleSpecification | undefined) => {
+    if(!map || !newMapStyle) { return; }
+    map?.setStyle(newMapStyle);
+  };
 
   useEffect(() => {
-    if (mapContainerRef.current) {
-      const map = new maplibregl.Map({
-        container: mapContainerRef.current, // 地図を表示するコンテナ
-        style: mapStyle, // MapLibreのスタイルURL
-        center: [139.6917, 35.6895], // 初期表示の中心座標（東京）
-        zoom: 10, // 初期ズームレベル
-      });
+    if (!mapContainerRef.current) { return; }
 
-      map.on('load', () => {
-        setMapStyle(map.getStyle());
-      });
+    const map = new maplibregl.Map({
+      container: mapContainerRef.current,
+      style: styleJson as StyleSpecification,
+      center: [139.6917, 35.6895],
+      zoom: 10
+    });
 
-      return () => {
-        map.remove(); // コンポーネントがアンマウントされたときに地図を削除
-      };
-    }
+    map.on('load', () => {
+      setMap(map);
+      setMapStyle(map.getStyle());
+    });
+
+    return () => {
+      map.remove();
+    };
   }, []);
 
   return (
@@ -37,7 +47,7 @@ const Demo = () => {
             <span>STYLE</span>
             <span>CREATER</span>
         </h1>
-        <MapStyleCreator mapStyle={mapStyle}/>
+        <MapStyleCreator mapStyle={mapStyle} onChange={onChangeMapStyle} />
       </div>
     </div>
   );

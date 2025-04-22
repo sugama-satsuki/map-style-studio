@@ -1,21 +1,38 @@
 import { useState } from 'react';
+import '@ant-design/v5-patch-for-react-19';
 import CategorySelect from './CategorySelect';
 import ColorInput from './ColorInput';
-import { Button, Form } from 'antd';
+import { Button, Form, Space } from 'antd';
 import './MapStyleCreator.css';
 import { StyleSpecification } from 'maplibre-gl';
 import useUpdateMapStyle from '../hooks/useUpdateMapStyle';
+import MapStylePreview from './MapStylePreview';
 
-const MapStyleCreator = (mapStyle: StyleSpecification | undefined) => {
+
+type MapStyleCreatorProps = {
+  mapStyle: StyleSpecification | undefined;
+  onChange: (mapStyle: StyleSpecification | undefined) => void;
+};
+
+
+const MapStyleCreator: React.FC<MapStyleCreatorProps> = (props) => {
+
+  const { mapStyle, onChange } = props;
+  
   const [category, setCategory] = useState('');
   const [colors, setColors] = useState({
     primary: '',
-    secondary: '',
-    other: '',
+    secondary: ''
   });
+
+  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+
 
   const updatedStyle = useUpdateMapStyle(mapStyle, colors);
 
+  /* **************** 
+   * 色の変更
+   * ****************/ 
   const handleColorChange = (key: string, value: string) => {
     setColors((prevColors) => ({
       ...prevColors,
@@ -23,51 +40,60 @@ const MapStyleCreator = (mapStyle: StyleSpecification | undefined) => {
     }));
   };
 
+  /* **************** 
+   * スタイルを適用
+   * ****************/ 
   const handleSubmit = () => {
-    console.log('Selected Category:', category);
-    console.log('Selected Colors:', colors);
-    console.log('Updated Style:', updatedStyle);
     // 適用処理をここに追加
+    onChange(updatedStyle);
   };
 
-  const handleExportStyle = () => {
-    console.log('Exported Style:', updatedStyle);
-    // JSONファイルとして書き出す処理を追加
-    const blob = new Blob([JSON.stringify(updatedStyle, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'style.json';
-    a.click();
-    URL.revokeObjectURL(url);
+  /* **************** 
+   * styleのプレビューを表示
+   * ****************/ 
+  const handlePreviewStyle = () => {
+    setIsPreviewVisible(true);
+  };
+
+  const handleClosePreview = () => {
+    setIsPreviewVisible(false);
   };
 
   return (
-    <Form layout="vertical" onFinish={handleSubmit} className="map-style-creator-form">
-      <Form.Item label="カテゴリから選ぶ" name="category">
-        <CategorySelect value={category} onChange={setCategory} />
-      </Form.Item>
-      <Form.Item label="自分で色を設定する">
-        {['color1', 'color2', 'color3'].map((color) => (
-          <ColorInput
-            key={color}
-            label={color}
-            value={colors[color as keyof typeof colors]}
-            onChange={(value) => handleColorChange(color, value)}
-          />
-        ))}
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" htmlType="submit" className='full-width'>
-          適用する
-        </Button>
-      </Form.Item>
-      <Form.Item>
-        <Button type="default" onClick={handleExportStyle} className='full-width margin-top-small'>
-          styleを書き出す
-        </Button>
-      </Form.Item>
-    </Form>
+    <>
+      <Form layout='vertical' onFinish={handleSubmit} className='map-style-creator-form'>
+        <Form.Item label='テーマから選ぶ' name='category'>
+          <CategorySelect value={category} onChange={setCategory} />
+        </Form.Item>
+        <Form.Item label='自分で色を設定する'>
+          <Space direction='vertical' size='small' className='flex'>
+          {['primary', 'secondary'].map((color) => (
+            <ColorInput
+              key={color}
+              label={color}
+              value={colors[color as keyof typeof colors]}
+              onChange={(value) => handleColorChange(color, value)}
+            />
+          ))}
+          </Space>
+        </Form.Item>
+        <Form.Item>
+          <Space direction='vertical' size='small' className='flex'>
+            <Button type='default' onClick={handlePreviewStyle} className='full-width'>
+              プレビュー
+            </Button>
+            <Button type='primary' htmlType='submit' className='full-width'>
+              適用する
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+      <MapStylePreview
+        visible={isPreviewVisible}
+        onClose={handleClosePreview}
+        style={updatedStyle}
+      />
+    </>
   );
 };
 
