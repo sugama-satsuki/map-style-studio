@@ -37,7 +37,7 @@ const MapStylePreview: React.FC<MapStylePreviewProps> = ({ visible, onClose, sty
   if(!visible) { return null; }
 
   return (
-    <Modal title="Basic Modal" 
+    <Modal title="地図スタイルプレビュー" 
       open={visible} 
       footer={
         <Button type="primary" onClick={onClose}>
@@ -46,13 +46,7 @@ const MapStylePreview: React.FC<MapStylePreviewProps> = ({ visible, onClose, sty
       }
       onCancel={onClose}
     >
-      <div className="map-style-preview" ref={mapContainerRef}></div>
-      <style>{`
-        .map-style-preview {
-          width: 100%;
-          height: 400px;
-        }
-      `}</style>
+      <div className="map-style-preview-container" ref={mapContainerRef}></div>
     </Modal>
   );
 };

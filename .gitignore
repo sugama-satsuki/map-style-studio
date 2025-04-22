@@ -12,7 +12,9 @@ dist
 dist-ssr
 *.local
 
-.parcel-cache/
+.parcel-cache/*
+*/data.mdb
+*/lock.mdb
 
 # Editor directories and files
 .vscode/*
