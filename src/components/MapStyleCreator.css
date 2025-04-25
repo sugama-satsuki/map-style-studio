@@ -9,4 +9,5 @@
     display: flex;
     box-shadow: 0 4px 6px #0000001a;
     box-sizing: border-box;
+    flex-direction: column;
 }
