@@ -1,12 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import '@ant-design/v5-patch-for-react-19';
 import CategorySelect from './CategorySelect';
 import ColorInput from './ColorInput';
-import { Button, Card, Space } from 'antd';
+import { Card, Slider, Space } from 'antd';
 import './MapStyleCreator.css';
 import { StyleSpecification } from 'maplibre-gl';
 import useUpdateMapStyle from '../hooks/useUpdateMapStyle';
-import MapStylePreview from './MapStylePreview';
 
 type MapStyleCreatorProps = {
   mapStyle: StyleSpecification | undefined;
@@ -21,8 +20,8 @@ const MapStyleCreator: React.FC<MapStyleCreatorProps> = (props) => {
     primary: '',
     secondary: '',
   });
-
-  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+  const [brightness, setBrightness] = useState(100);
+  const [saturation, setSaturation] = useState(100);
 
   const updatedStyle = useUpdateMapStyle(mapStyle, colors);
 
@@ -39,20 +38,14 @@ const MapStyleCreator: React.FC<MapStyleCreatorProps> = (props) => {
   /* **************** 
    * スタイルを適用
    * ****************/ 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     onChange(updatedStyle);
-  };
+  }, [onChange, updatedStyle]);
 
-  /* **************** 
-   * styleのプレビューを表示
-   * ****************/ 
-  const handlePreviewStyle = () => {
-    setIsPreviewVisible(true);
-  };
-
-  const handleClosePreview = () => {
-    setIsPreviewVisible(false);
-  };
+  
+  useEffect(() => {
+    handleSubmit();
+  }, [category, colors, handleSubmit]);
 
   return (
     <>
@@ -76,22 +69,31 @@ const MapStyleCreator: React.FC<MapStyleCreatorProps> = (props) => {
                 ))}
               </Space>
             </div>
-          </Space>
-          <Space direction="vertical" size="small" className="flex">
-            <Button type="default" onClick={handlePreviewStyle} className="full-width">
-              プレビュー
-            </Button>
-            <Button type="primary" onClick={handleSubmit} className="full-width">
-              適用する
-            </Button>
+            <Space direction="vertical" size="large" className="flex">
+              <div>
+                <label>明度</label>
+                <Slider
+                  min={0}
+                  max={200}
+                  value={brightness}
+                  onChange={(value: number) => setBrightness(value)}
+                  tooltip={{ formatter: (value) => `${value}%` }}
+                />
+              </div>
+              <div>
+                <label>彩度</label>
+                <Slider
+                  min={0}
+                  max={200}
+                  value={saturation}
+                  onChange={(value: number) => setSaturation(value)}
+                  tooltip={{ formatter: (value) => `${value}%` }}
+                />
+              </div>
+            </Space>
           </Space>
         </Space>
       </Card>
-      <MapStylePreview
-        visible={isPreviewVisible}
-        onClose={handleClosePreview}
-        style={updatedStyle}
-      />
     </>
   );
 };
