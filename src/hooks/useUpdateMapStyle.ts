@@ -1,82 +1,59 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { StyleSpecification } from 'maplibre-gl';
-import { TinyColor } from '@ctrl/tinycolor';
+import { Color } from '../components/ColorInput';
+import { AggregationColor } from 'antd/es/color-picker/color';
+import { adjustBackgroundColor, adjustRoadColor, adjustWaterColor } from '../util/colorController';
 
 
-const useUpdateMapStyle = (initialStyle: StyleSpecification | undefined, primary: string) => {
+const useUpdateMapStyle = (initialStyle: StyleSpecification | undefined, primary: Color | undefined, layerColors: { [key: string]: AggregationColor | undefined } | undefined) => {
     
   const [updatedStyle, setUpdatedStyle] = useState<StyleSpecification | undefined>(initialStyle);
 
-  const adjustBackgroundColor = (primaryColor: string): string => {
-    const color = new TinyColor(primaryColor);
-    const brightness = color.getBrightness(); // 明度
-
-    const lightenValue = brightness < 128 ? 50 : 25; // 暗い色はより明るく
-    const desaturateValue = brightness < 128 ? 5 : 10; // 暗い色は少し彩度を下げる
-    console.log("lightenValue: ", lightenValue, desaturateValue);
-  
-    return color.lighten(lightenValue).desaturate(desaturateValue).toString();
-  
-  };
-
-  const adjustWaterColor = (primaryColor: string): string => {
-    const color = new TinyColor(primaryColor);
-    const brightness = color.getBrightness();
-
-    const lightenValue = brightness < 128 ? 35 : 10;
-    const desaturateValue = brightness < 128 ? 60 : 40;
-
-    return color.lighten(lightenValue).desaturate(desaturateValue).toString();
-  };
-
-  const adjustRoadColor = (secondaryColor: string): string => {
-    const color = new TinyColor(secondaryColor);
-    const brightness = color.getBrightness();
-
-    const darkenValue = brightness > 128 ? 10 : 20;
-    const desaturateValue = brightness > 128 ? 50 : 30;
-
-    return color.darken(darkenValue).desaturate(desaturateValue).toString();
-  };
+  const color = useMemo(() => { 
+    if (!primary) { return ""; }
+    const { r, g, b, a } = (primary as AggregationColor).toRgb();
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  }, [primary]);
 
   useEffect(() => {
-    if(!initialStyle || primary === "") { return; }
+    if(!initialStyle || primary === "" || !primary) { return; }
     
     const newStyle = { ...initialStyle };
 
     newStyle.layers = newStyle.layers.map((layer) => {
       if (layer.id === 'background') {
+        console.log('background layer: ', color);
         layer.paint = {
           ...layer.paint,
-          'background-color': adjustBackgroundColor(primary),
+          'background-color': adjustBackgroundColor(color),
         };
       }
 
       if (layer.id === 'road-primary-highway') {
         layer.paint = {
           ...layer.paint,
-          'line-color': primary,
+          'line-color': color,
         };
       }
   
       if (layer.id === 'water-default') {
         layer.paint = {
           ...layer.paint,
-          'fill-color': adjustWaterColor(primary),
+          'fill-color': adjustWaterColor(color),
         };
       }
   
       if (layer.id === 'road-primary') {
         layer.paint = {
           ...layer.paint,
-          'line-color': adjustRoadColor(primary),
+          'line-color': adjustRoadColor(color),
         };
       }
   
       if (layer.id === 'building-default') {
         layer.paint = {
           ...layer.paint,
-          'fill-color': adjustRoadColor(primary),
+          'fill-color': adjustRoadColor(color),
         };
       }
       return layer;
@@ -84,9 +61,46 @@ const useUpdateMapStyle = (initialStyle: StyleSpecification | undefined, primary
     
     setUpdatedStyle(newStyle);
 
-  }, [initialStyle, primary]);
+  }, [initialStyle, color]);
 
-  return updatedStyle;
+
+
+  useEffect(() => {
+    if(!initialStyle || !layerColors) { return; }
+    
+    const newStyle = { ...initialStyle };
+
+    newStyle.layers = newStyle.layers.map((layer) => {
+      const layerColor = layerColors[layer.id];
+
+      if (layerColor) {
+        const { r, g, b, a } = (layerColor as AggregationColor).toRgb();
+        const rgbaColor = `rgba(${r}, ${g}, ${b}, ${a})`;
+
+        // レイヤーのタイプに応じて色を設定
+        if (layer.type === 'fill') {
+          layer.paint = {
+            ...layer.paint,
+            'fill-color': rgbaColor,
+          };
+        } else if (layer.type === 'line') {
+          layer.paint = {
+            ...layer.paint,
+            'line-color': rgbaColor,
+          };
+        }
+      }
+
+      return layer;
+    });
+    
+    setUpdatedStyle(newStyle);
+
+  }, [initialStyle, layerColors]);
+
+
+
+  return { updatedStyle };
 };
 
 export default useUpdateMapStyle;

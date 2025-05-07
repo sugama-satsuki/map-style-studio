@@ -1,31 +1,40 @@
 import { useEffect, useState } from 'react';
 import '@ant-design/v5-patch-for-react-19';
 import CategorySelect from './CategorySelect';
-import ColorInput from './ColorInput';
-import { Card, Slider, Space } from 'antd';
+import ColorInput, { Color } from './ColorInput';
+import { Card, Checkbox, Flex, Space } from 'antd';
 import './MapStyleCreator.css';
 import { StyleSpecification } from 'maplibre-gl';
 import useUpdateMapStyle from '../hooks/useUpdateMapStyle';
+import { AggregationColor } from 'antd/es/color-picker/color';
 
 type MapStyleCreatorProps = {
-  mapStyle: StyleSpecification | undefined;
-  onChange: (mapStyle: StyleSpecification | undefined) => void;
+  initialMapStyle: StyleSpecification | undefined;
+  onChange: (initial: StyleSpecification | undefined) => void;
 };
 
 const MapStyleCreator: React.FC<MapStyleCreatorProps> = (props) => {
-  const { mapStyle, onChange } = props;
+  const { initialMapStyle, onChange } = props;
 
   const [category, setCategory] = useState('');
-  const [primaryColor, setprimaryColor] = useState<string>("#1677ff");
-  const [brightness, setBrightness] = useState(100);
-  const [saturation, setSaturation] = useState(100);
+  const [primaryColor, setprimaryColor] = useState<Color | undefined>(undefined);
+  const [layerColors, setLayerColors] = useState<{ [key: string]: AggregationColor | undefined } | undefined>(undefined);
+  const [showLayerColors, setShowLayerColors] = useState(false);
+  const [mapStyle, setMapStyle] = useState<StyleSpecification | undefined>(initialMapStyle);
 
-  const updatedStyle = useUpdateMapStyle(mapStyle, primaryColor);
+  const { updatedStyle } = useUpdateMapStyle(mapStyle, primaryColor, layerColors);
+
+  useEffect(() => {
+    if (initialMapStyle) {
+      setMapStyle(initialMapStyle);
+    }
+  }
+  , [updatedStyle, initialMapStyle]);
 
   /* **************** 
    * 色の変更
    * ****************/ 
-  const handleColorChange = (value: string) => {
+  const handleColorChange = (value: Color | undefined) => {
     setprimaryColor(value);
   };
 
@@ -33,9 +42,7 @@ const MapStyleCreator: React.FC<MapStyleCreatorProps> = (props) => {
    * スタイルを適用
    * ****************/ 
   useEffect(() => {
-    if (updatedStyle) {
-      onChange(updatedStyle);
-    }
+    if (updatedStyle) { onChange(updatedStyle); }
   }, [updatedStyle, onChange]);
 
 
@@ -43,44 +50,40 @@ const MapStyleCreator: React.FC<MapStyleCreatorProps> = (props) => {
     <>
       <Card className="map-style-creator-card">
         <Space direction="vertical" size="large" className="flex">
-          <Space direction="vertical" size="small" className="flex">
+          <Flex vertical gap={8}>
             <div>
               <label>テーマから選ぶ</label>
               <CategorySelect value={category} onChange={setCategory} />
             </div>
             <div>
               <label>自分で色を設定する</label>
-              <Space direction="vertical" size="small" className="flex">
-                <ColorInput
-                  label={"primary color"}
-                  value={primaryColor}
-                  onChange={(value) => handleColorChange(value)}
-                />
-              </Space>
+              <ColorInput
+                label={"primary color"}
+                value={primaryColor}
+                onChange={(value) => handleColorChange(value)}
+              />
             </div>
-            <Space direction="vertical" size="large" className="flex">
-              <div>
-                <label>明度</label>
-                <Slider
-                  min={0}
-                  max={200}
-                  value={brightness}
-                  onChange={(value: number) => setBrightness(value)}
-                  tooltip={{ formatter: (value) => `${value}%` }}
-                />
-              </div>
-              <div>
-                <label>彩度</label>
-                <Slider
-                  min={0}
-                  max={200}
-                  value={saturation}
-                  onChange={(value: number) => setSaturation(value)}
-                  tooltip={{ formatter: (value) => `${value}%` }}
-                />
-              </div>
+            <Space direction="vertical" size="small">
+              <Checkbox onChange={() => setShowLayerColors((prev) => !prev)}>レイヤーごとに色をかえる</Checkbox>
+              { showLayerColors &&
+                <Flex vertical gap={2}>
+                  { (updatedStyle??initialMapStyle)?.layers.map((layer) => {
+                    return <ColorInput
+                      key={layer.id}
+                      label={layer.id}
+                      value={layerColors ? layerColors[layer.id] || '' : ''}
+                      onChange={(value) => setLayerColors((prev) => ({
+                          ...prev,
+                          [layer.id]: value as AggregationColor
+                        }))
+                      }
+                    />
+                  }) 
+                  }
+                </Flex>
+              }
             </Space>
-          </Space>
+          </Flex>
         </Space>
       </Card>
     </>

@@ -9,11 +9,10 @@ import styleJson from './style.json';
 const Demo = () => {
 
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const [mapStyle, setMapStyle] = useState<StyleSpecification | undefined>(undefined);
+  const [initialMapStyle, setMapStyle] = useState<StyleSpecification | undefined>(undefined);
   const [map, setMap] = useState<maplibregl.Map | null>(null);
 
   const onChangeMapStyle = (newMapStyle: StyleSpecification | undefined) => {
-    console.log('newMapStyle!!!!: ', newMapStyle);
     if(!map || !newMapStyle) { return; }
     map.setStyle(newMapStyle);
   };
@@ -48,7 +47,7 @@ const Demo = () => {
             <span>STYLE</span>
             <span>CREATER</span>
         </h1>
-        <MapStyleCreator mapStyle={mapStyle} onChange={onChangeMapStyle} />
+        <MapStyleCreator initialMapStyle={initialMapStyle} onChange={onChangeMapStyle} />
       </div>
     </div>
   );
