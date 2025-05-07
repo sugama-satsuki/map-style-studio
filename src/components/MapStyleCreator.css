@@ -1,13 +1,5 @@
-.map-style-creator-form {
-    background-color: #fff;
-    border-radius: 8px;
-    flex-direction: column;
-    flex: 1;
-    align-items: left;
-    margin: 0;
-    padding: 16px;
-    display: flex;
-    box-shadow: 0 4px 6px #0000001a;
-    box-sizing: border-box;
-    flex-direction: column;
+.map-style-creator-card {
+    max-height: 100%;
+    max-width: 100%;
+    overflow-y: auto;
 }

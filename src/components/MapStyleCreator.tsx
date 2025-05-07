@@ -58,7 +58,7 @@ const MapStyleCreator: React.FC<MapStyleCreatorProps> = (props) => {
             <div>
               <label>自分で色を設定する</label>
               <ColorInput
-                label={"primary color"}
+                label={"テーマカラー"}
                 value={primaryColor}
                 onChange={(value) => handleColorChange(value)}
               />
@@ -66,7 +66,7 @@ const MapStyleCreator: React.FC<MapStyleCreatorProps> = (props) => {
             <Space direction="vertical" size="small">
               <Checkbox onChange={() => setShowLayerColors((prev) => !prev)}>レイヤーごとに色をかえる</Checkbox>
               { showLayerColors &&
-                <Flex vertical gap={2}>
+                <Flex vertical gap={4}>
                   { (updatedStyle??initialMapStyle)?.layers.map((layer) => {
                     return <ColorInput
                       key={layer.id}

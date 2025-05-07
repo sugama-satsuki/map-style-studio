@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ColorPickerProps, Flex, GetProp, Input, ColorPicker } from 'antd';
+import { ColorPickerProps, Flex, GetProp, Input, ColorPicker, Typography } from 'antd';
 import { AggregationColor } from 'antd/es/color-picker/color';
 
 
@@ -11,6 +11,8 @@ interface ColorInputProps {
   onChange: (value: Color | undefined) => void;
 }
 
+const { Text } = Typography;
+
 const ColorInput: React.FC<ColorInputProps> = ({ label, value, onChange }) => {
 
   const inputValue = useMemo(() => {
@@ -20,13 +22,16 @@ const ColorInput: React.FC<ColorInputProps> = ({ label, value, onChange }) => {
   }, [value]);
 
   return (
-    <Flex gap={8}>
-      <ColorPicker defaultValue={value} onChangeComplete={(value) => { onChange(value) }} />
-      <Input
-        value={inputValue}
-        placeholder={`${label}を入力`}
-      />
-    </Flex>
+    <div>
+      <Text type="secondary" style={{ margin: 0 }}>{ label }</Text>
+      <Flex gap={8}>
+        <ColorPicker defaultValue={value} onChangeComplete={(value) => { onChange(value) }} />
+        <Input
+          value={inputValue}
+          placeholder={label}
+        />
+      </Flex>
+    </div>
   );
 };
 
