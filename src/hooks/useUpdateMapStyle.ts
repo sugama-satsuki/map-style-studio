@@ -3,27 +3,23 @@ import { StyleSpecification } from 'maplibre-gl';
 import { TinyColor } from '@ctrl/tinycolor';
 
 
-interface Colors {
-  [key: string]: string;
-}
-
-const useUpdateMapStyle = (initialStyle: StyleSpecification | undefined, colors: Colors) => {
+const useUpdateMapStyle = (initialStyle: StyleSpecification | undefined, primary: string) => {
     
   const [updatedStyle, setUpdatedStyle] = useState<StyleSpecification | undefined>(initialStyle);
-  const { primary, secondary } = colors;
 
   const adjustBackgroundColor = (primaryColor: string): string => {
     const color = new TinyColor(primaryColor);
     const brightness = color.getBrightness(); // 明度
 
     const lightenValue = brightness < 128 ? 50 : 25; // 暗い色はより明るく
-    const desaturateValue = brightness < 128 ? 10 : 5; // 暗い色は少し彩度を下げる
+    const desaturateValue = brightness < 128 ? 5 : 10; // 暗い色は少し彩度を下げる
+    console.log("lightenValue: ", lightenValue, desaturateValue);
   
     return color.lighten(lightenValue).desaturate(desaturateValue).toString();
   
   };
 
-  const adjustWaterColor = (primaryColor: string, secondaryColor?: string): string => {
+  const adjustWaterColor = (primaryColor: string): string => {
     const color = new TinyColor(primaryColor);
     const brightness = color.getBrightness();
 
@@ -44,7 +40,7 @@ const useUpdateMapStyle = (initialStyle: StyleSpecification | undefined, colors:
   };
 
   useEffect(() => {
-    if(!initialStyle) { return; }
+    if(!initialStyle || primary === "") { return; }
     
     const newStyle = { ...initialStyle };
 
@@ -66,28 +62,29 @@ const useUpdateMapStyle = (initialStyle: StyleSpecification | undefined, colors:
       if (layer.id === 'water-default') {
         layer.paint = {
           ...layer.paint,
-          'fill-color': adjustWaterColor(primary, secondary),
+          'fill-color': adjustWaterColor(primary),
         };
       }
   
       if (layer.id === 'road-primary') {
         layer.paint = {
           ...layer.paint,
-          'line-color': adjustRoadColor(secondary || primary),
+          'line-color': adjustRoadColor(primary),
         };
       }
   
       if (layer.id === 'building-default') {
         layer.paint = {
           ...layer.paint,
-          'fill-color': adjustRoadColor(secondary || primary),
+          'fill-color': adjustRoadColor(primary),
         };
       }
       return layer;
     });
-
+    
     setUpdatedStyle(newStyle);
-  }, [colors, initialStyle, primary, secondary]);
+
+  }, [initialStyle, primary]);
 
   return updatedStyle;
 };

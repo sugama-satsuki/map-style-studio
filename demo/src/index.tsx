@@ -13,8 +13,9 @@ const Demo = () => {
   const [map, setMap] = useState<maplibregl.Map | null>(null);
 
   const onChangeMapStyle = (newMapStyle: StyleSpecification | undefined) => {
+    console.log('newMapStyle!!!!: ', newMapStyle);
     if(!map || !newMapStyle) { return; }
-    map?.setStyle(newMapStyle);
+    map.setStyle(newMapStyle);
   };
 
   useEffect(() => {

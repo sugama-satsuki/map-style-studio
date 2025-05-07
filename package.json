@@ -8,8 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start-demo": "parcel demo/src/index.html --dist-dir demo/dist --open",
-    "build-demo": "del-cli 'demo/dist/*' && parcel build demo/src/index.html --out-dir demo/dist --public-url https://omgovich.github.io/react-colorful/"
+    "start-demo": "parcel demo/src/index.html --dist-dir demo/dist --open"
   },
   "dependencies": {
     "@ant-design/v5-patch-for-react-19": "^1.0.3",

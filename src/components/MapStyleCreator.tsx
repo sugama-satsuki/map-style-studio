@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import '@ant-design/v5-patch-for-react-19';
 import CategorySelect from './CategorySelect';
 import ColorInput from './ColorInput';
@@ -16,36 +16,28 @@ const MapStyleCreator: React.FC<MapStyleCreatorProps> = (props) => {
   const { mapStyle, onChange } = props;
 
   const [category, setCategory] = useState('');
-  const [colors, setColors] = useState({
-    primary: '',
-    secondary: '',
-  });
+  const [primaryColor, setprimaryColor] = useState<string>("#1677ff");
   const [brightness, setBrightness] = useState(100);
   const [saturation, setSaturation] = useState(100);
 
-  const updatedStyle = useUpdateMapStyle(mapStyle, colors);
+  const updatedStyle = useUpdateMapStyle(mapStyle, primaryColor);
 
   /* **************** 
    * 色の変更
    * ****************/ 
-  const handleColorChange = (key: string, value: string) => {
-    setColors((prevColors) => ({
-      ...prevColors,
-      [key]: value,
-    }));
+  const handleColorChange = (value: string) => {
+    setprimaryColor(value);
   };
 
   /* **************** 
    * スタイルを適用
    * ****************/ 
-  const handleSubmit = useCallback(() => {
-    onChange(updatedStyle);
-  }, [onChange, updatedStyle]);
-
-  
   useEffect(() => {
-    handleSubmit();
-  }, [category, colors, handleSubmit]);
+    if (updatedStyle) {
+      onChange(updatedStyle);
+    }
+  }, [updatedStyle, onChange]);
+
 
   return (
     <>
@@ -59,14 +51,11 @@ const MapStyleCreator: React.FC<MapStyleCreatorProps> = (props) => {
             <div>
               <label>自分で色を設定する</label>
               <Space direction="vertical" size="small" className="flex">
-                {['primary', 'secondary'].map((color) => (
-                  <ColorInput
-                    key={color}
-                    label={color}
-                    value={colors[color as keyof typeof colors]}
-                    onChange={(value) => handleColorChange(color, value)}
-                  />
-                ))}
+                <ColorInput
+                  label={"primary color"}
+                  value={primaryColor}
+                  onChange={(value) => handleColorChange(value)}
+                />
               </Space>
             </div>
             <Space direction="vertical" size="large" className="flex">
