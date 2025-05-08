@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start-demo": "parcel demo/src/index.html --dist-dir demo/dist --open"
+    "start-demo": "rm -rf .parcel-cache && parcel demo/src/index.html --dist-dir demo/dist --open"
   },
   "dependencies": {
     "@ant-design/v5-patch-for-react-19": "^1.0.3",

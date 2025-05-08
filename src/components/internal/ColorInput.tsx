@@ -3,7 +3,7 @@ import { ColorPickerProps, Flex, GetProp, Input, ColorPicker, Typography } from 
 import { AggregationColor } from 'antd/es/color-picker/color';
 
 
-export type Color = GetProp<ColorPickerProps, 'value'>;
+type Color = GetProp<ColorPickerProps, 'value'>;
 
 interface ColorInputProps {
   label: string;

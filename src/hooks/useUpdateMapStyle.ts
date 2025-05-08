@@ -1,11 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import { StyleSpecification } from 'maplibre-gl';
-import { Color } from '../components/ColorInput';
 import { AggregationColor } from 'antd/es/color-picker/color';
 import { adjustBackgroundColor, adjustRoadColor, adjustWaterColor } from '../util/colorController';
+import { ColorPickerProps, GetProp } from 'antd';
 
 
-const useUpdateMapStyle = (initialStyle: StyleSpecification | undefined, primary: Color | undefined, layerColors: { [key: string]: AggregationColor | undefined } | undefined) => {
+type Color = GetProp<ColorPickerProps, 'value'>;
+
+
+const useUpdateMapStyle = (initialStyle: StyleSpecification | undefined, primary: Color | undefined) => {
     
   const [updatedStyle, setUpdatedStyle] = useState<StyleSpecification | undefined>(initialStyle);
 
@@ -14,6 +17,7 @@ const useUpdateMapStyle = (initialStyle: StyleSpecification | undefined, primary
     const { r, g, b, a } = (primary as AggregationColor).toRgb();
     return `rgba(${r}, ${g}, ${b}, ${a})`;
   }, [primary]);
+
 
   useEffect(() => {
     if(!initialStyle || primary === "" || !primary) { return; }
@@ -63,43 +67,7 @@ const useUpdateMapStyle = (initialStyle: StyleSpecification | undefined, primary
 
   }, [initialStyle, color]);
 
-
-
-  useEffect(() => {
-    if(!initialStyle || !layerColors) { return; }
-    
-    const newStyle = { ...initialStyle };
-
-    newStyle.layers = newStyle.layers.map((layer) => {
-      const layerColor = layerColors[layer.id];
-
-      if (layerColor) {
-        const { r, g, b, a } = (layerColor as AggregationColor).toRgb();
-        const rgbaColor = `rgba(${r}, ${g}, ${b}, ${a})`;
-
-        // レイヤーのタイプに応じて色を設定
-        if (layer.type === 'fill') {
-          layer.paint = {
-            ...layer.paint,
-            'fill-color': rgbaColor,
-          };
-        } else if (layer.type === 'line') {
-          layer.paint = {
-            ...layer.paint,
-            'line-color': rgbaColor,
-          };
-        }
-      }
-
-      return layer;
-    });
-    
-    setUpdatedStyle(newStyle);
-
-  }, [initialStyle, layerColors]);
-
-
-
+  
   return { updatedStyle };
 };
 
