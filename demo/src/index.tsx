@@ -39,24 +39,24 @@ const Demo = () => {
   }, []);
 
   return (
-    <Row gutter={16} align="top" style={{ height: '100vh', boxSizing: 'border-box', maxHeight: '100vh' }}>
-      <Col span={18} push={6}>
+    <Row align="top" style={{ height: '100vh', boxSizing: 'border-box', maxHeight: '100vh' }}>
+      <Col span={8} push={16}>
+        <Space direction="vertical" style={{ padding: '20px 10px' }}>
+            <h1 className="layout__title">
+              <span>MAP</span>
+              <span>STYLE</span>
+              <span>CREATER</span>
+            </h1>
+            <Card className="layout__map-style-creator__card" style={{ maxHeight: '500px', overflowY: 'scroll' }}>
+              <MapColorChanger mapStyle={initialMapStyle} onChange={onChangeMapStyle} />
+              <Divider />
+              <MapLayerColorChanger mapStyle={initialMapStyle} onChange={onChangeMapStyle} />
+            </Card>
+          </Space>
+      </Col>
+      <Col span={16} pull={8}>
         <div className="layout__map-area" ref={mapContainerRef}>
         </div>
-      </Col>
-      <Col span={6} pull={18}>
-        <Space direction="vertical" style={{ padding: '20px 10px' }}>
-          <h1 className="layout__title">
-            <span>MAP</span>
-            <span>STYLE</span>
-            <span>CREATER</span>
-          </h1>
-          <Card className="layout__map-style-creator__card" style={{ maxHeight: '500px', overflowY: 'scroll' }}>
-            <MapColorChanger mapStyle={initialMapStyle} onChange={onChangeMapStyle} />
-            <Divider />
-            <MapLayerColorChanger mapStyle={initialMapStyle} onChange={onChangeMapStyle} />
-          </Card>
-        </Space>
       </Col>
     </Row>
   );

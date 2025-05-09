@@ -14,10 +14,7 @@ body {
 .layout__map-area {
     flex: 3;
     background-color: white;
-    margin: 16px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: solid 8px #fff;
+    border: solid 4px #fff;
     height: 100vh;
     box-sizing: border-box;
 }
