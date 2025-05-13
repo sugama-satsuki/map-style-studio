@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client';
 import maplibregl, { StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import styleJson from './style.json';
-import { Card, Col, Divider, Row, Space } from 'antd';
+import { Card, Checkbox, Col, Divider, Input, Row, Space } from 'antd';
 
 
 const Demo = () => {
@@ -12,6 +12,8 @@ const Demo = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const [initialMapStyle, setMapStyle] = useState<StyleSpecification | undefined>(undefined);
   const [map, setMap] = useState<maplibregl.Map | null>(null);
+  const [zoom, setZoom] = useState<number>(0);
+  const [checked, setChecked] = useState<boolean>(false);
 
   const onChangeMapStyle = (newMapStyle: StyleSpecification | undefined) => {
     if(!map || !newMapStyle) { return; }
@@ -25,12 +27,19 @@ const Demo = () => {
       container: mapContainerRef.current,
       style: styleJson as StyleSpecification,
       center: [139.6917, 35.6895],
-      zoom: 10
+      zoom: 10,
+      hash: true
     });
 
     map.on('load', () => {
       setMap(map);
+      setZoom(map.getZoom());
       setMapStyle(map.getStyle());
+    });
+
+    map.on('zoomend', () => {
+      const zoom = map.getZoom();
+      setZoom(zoom);
     });
 
     return () => {
@@ -47,10 +56,18 @@ const Demo = () => {
               <span>STYLE</span>
               <span>CREATER</span>
             </h1>
+            <Input value={ `zoomレベル：${ zoom }` } />
+            <Checkbox value="road" checked={checked} onChange={() => setChecked(prev => !prev)}>zoomレベル毎に色を設定</Checkbox> 
             <Card className="layout__map-style-creator__card" style={{ maxHeight: '500px', overflowY: 'scroll' }}>
               <MapColorChanger mapStyle={initialMapStyle} onChange={onChangeMapStyle} />
               <Divider />
-              <MapLayerColorChanger mapStyle={initialMapStyle} onChange={onChangeMapStyle} />
+              <MapLayerColorChanger 
+                mapStyle={initialMapStyle} 
+                onChange={onChangeMapStyle} 
+                options={{
+                  minzoom: checked ? zoom : undefined
+                }}
+              />
             </Card>
           </Space>
       </Col>

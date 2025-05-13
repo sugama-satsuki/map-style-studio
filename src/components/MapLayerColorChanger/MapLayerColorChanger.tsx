@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Flex } from 'antd';
 import ColorInput from '../internal/ColorInput';
-import { StyleSpecification } from 'maplibre-gl';
 import { AggregationColor } from 'antd/es/color-picker/color';
 import useUpdateLayerStyle from '../../hooks/useUpdateLayerStyle';
+import { MapLayerColorChangerProps } from './types';
 
-type MapLayerColorChangerProps = {
-  mapStyle: StyleSpecification | undefined;
-  onChange: (style: StyleSpecification | undefined) => void;
-};
 
-const MapLayerColorChanger: React.FC<MapLayerColorChangerProps> = ({ mapStyle, onChange }) => {
+const MapLayerColorChanger: React.FC<MapLayerColorChangerProps> = ({ mapStyle, onChange, options }) => {
 
   const [layerColors, setLayerColors] = useState<{ [key: string]: AggregationColor | undefined }>({});
 
-  const { updatedStyle } = useUpdateLayerStyle(mapStyle, layerColors);
+  const { updatedStyle } = useUpdateLayerStyle(mapStyle, layerColors, options);
 
 
   useEffect(() => {
