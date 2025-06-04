@@ -12,10 +12,6 @@ dist
 dist-ssr
 *.local
 
-.parcel-cache/*
-*/data.mdb
-*/lock.mdb
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -5,7 +5,11 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-jsx",
     "module": "ESNext",
-    "esModuleInterop": true
+    "moduleResolution": "Node",
+    "target": "ESNext",
   }
 }
