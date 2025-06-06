@@ -5,6 +5,7 @@ import MapCanvas from '../MapCanvas/MapCanvas';
 import Sidebar from '../Sidebar/Sidebar';
 import { Header } from 'antd/es/layout/layout';
 import ColorPicker from '../ColorPicker/ColorPicker';
+import LayerList from '../LayerList/LayerList';
 
 const { Sider, Content } = Layout;
 const { Title } = Typography;
@@ -19,7 +20,7 @@ const LayerEditor: React.FC = () => {
   if (selectedMenu === 'theme') {
     sidebarContent = <ColorPicker />;
   } else if (selectedMenu === 'layer') {
-    sidebarContent = <div>レイヤー単位編集コンポーネント（仮）</div>;
+    sidebarContent = <LayerList />;
   }
 
   return (
