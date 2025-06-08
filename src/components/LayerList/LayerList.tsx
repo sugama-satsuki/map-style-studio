@@ -27,7 +27,10 @@ const LayerList: React.FC = () => {
         return (
             <Collapse ghost size="small">
                 <Panel header="Filter" key="filter">
-                    <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(layer.filter, null, 2)}</pre>
+                    {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify((layer as any).filter, null, 2)}</pre>
+                    }
                 </Panel>
                 <Panel header="Paint" key="paint">
                     <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(layer.paint, null, 2)}</pre>
