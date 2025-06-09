@@ -28,7 +28,7 @@ const MapPopup: React.FC<Props> = ({ lngLat, properties, point, onClose }) => {
                 top: point.y,
                 transform: 'translate(-50%, -100%)',
                 zIndex: 1000,
-                width: 320,
+                width: 360,
                 maxHeight: 320
             }}
         >
