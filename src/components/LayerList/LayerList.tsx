@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Input, Space } from 'antd';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
@@ -10,12 +10,12 @@ const LayerList: React.FC = () => {
     const layers = style?.layers || [];
     const grouped = groupLayersByType(layers);
 
-    const layerGroups = [
+    const layerGroups = useMemo(() => [
         { type: 'point', label: 'point', layers: grouped.point },
         { type: 'symbol', label: 'symbol', layers: grouped.symbol },
         { type: 'line', label: 'line', layers: grouped.line },
         { type: 'polygon', label: 'polygon', layers: grouped.polygon },
-    ];
+    ], [grouped]);
 
     const [editing, setEditing] = useState<{
         layerId: string;
@@ -26,12 +26,14 @@ const LayerList: React.FC = () => {
     const [search, setSearch] = useState('');
 
     // 検索ワードでフィルタリング
-    const filteredGroups = layerGroups.map(group => ({
+    const filteredGroups = useMemo(() => (
+    layerGroups.map(group => ({
         ...group,
         layers: group.layers.filter(layer =>
-            layer.id.toLowerCase().includes(search.toLowerCase())
+        layer.id.toLowerCase().includes(search.toLowerCase())
         ),
-    })).filter(group => group.layers.length > 0);
+    })).filter(group => group.layers.length > 0)
+    ), [layerGroups, search]);
 
     // 編集開始
     const handleEdit = (layerId: string, field: 'filter' | 'paint' | 'layout') => {
@@ -58,6 +60,7 @@ const LayerList: React.FC = () => {
     return (
         <Space direction="vertical" style={{ width: '100%', padding: 0 }} size='small'>
             <Input
+                size="large"
                 placeholder="レイヤー検索"
                 value={search}
                 onChange={e => setSearch(e.target.value)}

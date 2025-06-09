@@ -81,6 +81,7 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onSave,
               value={localValue}
               onChange={e => setLocalValue(e.target.value)}
               autoSize={{ minRows: 4 }}
+              style={{ backgroundColor: '#fbfbfb'}}
             />
           ) : (
             <pre style={{ whiteSpace: 'pre-wrap' }}>
