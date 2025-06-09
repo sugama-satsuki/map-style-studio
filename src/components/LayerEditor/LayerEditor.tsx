@@ -30,13 +30,13 @@ const LayerEditor: React.FC = () => {
       </Header>
       <Layout>
         <Sider
-          width={ sidebarContent ? 500 : 200}
+          width={ sidebarContent ? 550 : 200}
           data-testid="sidebar"
           className="layer-editor-sidebar"
         >
           <Flex justify='space-between' align='start'>
             <Sidebar selectedMenu={selectedMenu} onChangeMenu={setSelectedMenu} />
-            <Card style={{ width: 300, backgroundColor: '#f9f8f8' }}>
+            <Card style={{ width: 350, backgroundColor: '#f9f8f8' }} size='small'>
               { sidebarContent }
             </Card>
           </Flex>
