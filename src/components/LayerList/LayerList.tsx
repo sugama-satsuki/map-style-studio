@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Input, Button, List, Typography, Space, Collapse, Flex, Tooltip, message } from 'antd';
 import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 import { groupLayersByType } from '../../utils/layerControl';
 import type { LayerSpecification } from 'maplibre-gl';
@@ -34,6 +34,7 @@ const LayerList: React.FC = () => {
         setEditing({
             layerId: layer.id,
             field,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             value: JSON.stringify((layer as any)[field], null, 2) || ''
         });
     };
@@ -45,7 +46,7 @@ const LayerList: React.FC = () => {
             const newLayers = layers.map(l =>
                 l.id === layer.id ? { ...l, [field]: newValue } : l
             );
-            setStyle({ ...style, layers: newLayers });
+            setStyle({ ...style!, layers: newLayers });
             setEditing(null);
             message.success('保存しました');
         } catch {
@@ -112,7 +113,10 @@ const LayerList: React.FC = () => {
                             />
                         ) : (
                             <pre style={{ whiteSpace: 'pre-wrap' }}>
-                                {JSON.stringify((layer as any)[field], null, 2)}
+                                {
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    JSON.stringify((layer as any)[field], null, 2)
+                                }
                             </pre>
                         )}
                     </Panel>

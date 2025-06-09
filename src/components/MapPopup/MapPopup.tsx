@@ -3,6 +3,7 @@ import React from 'react';
 
 type Props = {
     lngLat: [number, number];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     properties: Record<string, any>[];
     point?: { x: number; y: number }; // pointをオプショナルに
     onClose: () => void;

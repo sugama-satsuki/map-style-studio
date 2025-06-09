@@ -4,6 +4,7 @@ import type { Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
 export interface MapPopupInfo {
   lngLat: [number, number];
   point: { x: number; y: number };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   properties: Record<string, any>[];
 }
 
