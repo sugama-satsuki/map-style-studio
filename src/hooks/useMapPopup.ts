@@ -13,10 +13,12 @@ export function useMapPopup(mapRef: React.MutableRefObject<MapLibreMap | null>) 
 
   useEffect(() => {
     const map = mapRef.current;
+    console.log('useMapPopup: mapRef.current', map);
     if (!map) return;
 
     const handleClick = (e: MapMouseEvent) => {
       const features = map.queryRenderedFeatures(e.point);
+      console.log('Clicked features:', features);
       if (features.length > 0) {
         setPopupInfo({
           lngLat: [e.lngLat.lng, e.lngLat.lat],

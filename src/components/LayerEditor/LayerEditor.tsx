@@ -8,6 +8,7 @@ import ColorPicker from '../ColorPicker/ColorPicker';
 import LayerList from '../LayerList/LayerList';
 import { useAtomValue } from 'jotai';
 import { styleAtom } from '../../atom';
+import FileImporter from '../FileImporter/FileImporter';
 
 const { Sider, Content } = Layout;
 const { Title } = Typography;
@@ -66,7 +67,11 @@ const LayerEditor: React.FC = () => {
             data-testid="map"
             className="layer-editor-content"
           >
-            <MapCanvas />
+            { style ? 
+              <MapCanvas />
+              :
+              <FileImporter />
+            }
           </Content>
         </Layout>
       </Layout>

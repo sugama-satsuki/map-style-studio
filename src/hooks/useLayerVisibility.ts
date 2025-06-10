@@ -10,16 +10,18 @@ export function useLayerVisibility(mapRef: maplibregl.Map | null, layerId: strin
 
   // レイヤーの可視状態を取得
   useEffect(() => {
+    if (!mapRef || !layerId) { return; }
     const map = mapRef;
-    if (!map || !map.getLayer(layerId)) return;
+    if (!map.getLayer(layerId)) { return; }
     const visibility = map.getLayoutProperty(layerId, 'visibility');
     setIsVisible(visibility !== 'none');
   }, [mapRef, layerId]);
 
   // 表示/非表示を切り替える
   const toggleVisibility = useCallback(() => {
+    if (!mapRef || !layerId) { return; }
     const map = mapRef;
-    if (!map || !map.getLayer(layerId)) return;
+    if (!map.getLayer(layerId)) { return; }
     const current = map.getLayoutProperty(layerId, 'visibility');
     const next = current === 'none' ? 'visible' : 'none';
     map.setLayoutProperty(layerId, 'visibility', next);
