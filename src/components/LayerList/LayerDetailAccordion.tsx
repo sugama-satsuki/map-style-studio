@@ -10,11 +10,12 @@ type Props = {
   layer: LayerSpecification;
   editing: { layerId: string; field: 'filter' | 'paint' | 'layout' | null; value: string } | null;
   onEdit: (field: 'filter' | 'paint' | 'layout') => void;
+  onDeleteStyle: (field: 'filter' | 'paint' | 'layout') => void;
   onSave: (field: 'filter' | 'paint' | 'layout', value: string) => void;
   onCancel: () => void;
 };
 
-const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onSave, onCancel }) => {
+const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onDeleteStyle, onSave, onCancel }) => {
   const [localValue, setLocalValue] = useState<string>('');
   const [localEditing, setLocalEditing] = useState<{ layerId: string; field: 'filter' | 'paint' | 'layout' | null } | null>(null);
 
@@ -68,7 +69,12 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onSave,
                   </Tooltip>
                 )}
                 <Tooltip title="削除">
-                  <Button type="default" shape="circle" icon={<DeleteOutlined />} />
+                  <Button
+                    type="default"
+                    shape="circle"
+                    icon={<DeleteOutlined />}
+                    onClick={() => onDeleteStyle(field)}
+                  />
                 </Tooltip>
               </Flex>
             </Flex>

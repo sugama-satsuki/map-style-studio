@@ -27,12 +27,12 @@ const LayerList: React.FC = () => {
 
     // 検索ワードでフィルタリング
     const filteredGroups = useMemo(() => (
-    layerGroups.map(group => ({
-        ...group,
-        layers: group.layers.filter(layer =>
-        layer.id.toLowerCase().includes(search.toLowerCase())
-        ),
-    })).filter(group => group.layers.length > 0)
+        layerGroups.map(group => ({
+            ...group,
+            layers: group.layers.filter(layer =>
+                layer.id.toLowerCase().includes(search.toLowerCase())
+            ),
+        })).filter(group => group.layers.length > 0)
     ), [layerGroups, search]);
 
     // 編集開始
@@ -54,6 +54,19 @@ const LayerList: React.FC = () => {
         }
     };
 
+    // 削除処理（filter/paint/layoutをundefinedにする）
+    const handleDeleteStyle = (layerId: string, field: 'filter' | 'paint' | 'layout') => {
+        const newLayers = layers.map(l =>
+            l.id === layerId ? { ...l, [field]: undefined } : l
+        );
+        setStyle({ ...style!, layers: newLayers });
+    };
+    // レイヤー削除処理
+    const handleDeleteLayer = (layerId: string) => {
+        const newLayers = layers.filter(l => l.id !== layerId);
+        setStyle({ ...style!, layers: newLayers });
+    };
+
     // 編集キャンセル
     const handleCancel = () => setEditing(null);
 
@@ -73,6 +86,8 @@ const LayerList: React.FC = () => {
                     group={group}
                     editing={editing}
                     onEdit={handleEdit}
+                    onDeleteStyle={(field) => handleDeleteStyle(group.layers[0].id, field)}
+                    onDeleteLayer={() => handleDeleteLayer(group.layers[0].id)}
                     onSave={handleSave}
                     onCancel={handleCancel}
                 />

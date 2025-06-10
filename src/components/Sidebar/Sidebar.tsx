@@ -13,6 +13,10 @@ const items = [
         key: 'layer',
         label: 'レイヤー単位編集',
     },
+    {
+        key: 'create-style',
+        label: '新規作成',
+    },
 ];
 
 interface Props {
