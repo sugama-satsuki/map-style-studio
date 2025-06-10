@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Space, message, Button, Upload, Typography, type UploadProps, Row, Col } from 'antd';
+import { Space, message, Upload, Typography, type UploadProps, Row, Col, Spin } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import './FileImporter.css';
 import { useSetAtom } from 'jotai';
@@ -12,10 +12,9 @@ type Props = {
   onShowLayerEditor?: () => void;
 };
 
-const FileImporter: React.FC<Props> = ({ onShowLayerEditor }) => {
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [fileSelected, setFileSelected] = useState(false);
+const FileImporter: React.FC<Props> = () => {
   const setStyle = useSetAtom(styleAtom);
+  const [spinning, setSpinning] = useState(false);
 
   const props: UploadProps = {
     name: 'file',
@@ -29,13 +28,13 @@ const FileImporter: React.FC<Props> = ({ onShowLayerEditor }) => {
       return isJson || Upload.LIST_IGNORE;
     },
     customRequest({ file, onSuccess }) {
+      setSpinning(true);
       const reader = new FileReader();
       reader.onload = (e) => {
         const json = JSON.parse(e.target?.result as string);
         setStyle(json);
-        setFileName((file as File).name);
-        setFileSelected(true);
-        if (onSuccess) onSuccess("ok");
+        if (onSuccess) { onSuccess("ok"); }
+        setSpinning(false);
       };
       reader.readAsText(file as File);
     },
@@ -48,25 +47,19 @@ const FileImporter: React.FC<Props> = ({ onShowLayerEditor }) => {
     <Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
       <Col>
         <div className="file-importer-container">
-          <Dragger {...props} showUploadList={false}>
-            <Space direction="vertical">
-              <p className="ant-upload-drag-icon">
-                <InboxOutlined />
-              </p>
-              <Text strong>クリックまたはファイルをドラッグしてアップロード</Text>
-              <Text type="secondary">地図スタイルをインポートするには、JSONファイルを選択してください。</Text>
-            </Space>
+          <Dragger {...props} showUploadList={false} style={{ backgroundColor: '#fff' }}>
+            {spinning ?
+              <Spin spinning={spinning} tip="styleを読み込んでいます" />
+              :
+              <Space direction="vertical">
+                <p className="ant-upload-drag-icon">
+                  <InboxOutlined />
+                </p>
+                <Text strong>クリックまたはファイルをドラッグしてアップロード</Text>
+                <Text type="secondary">地図スタイルをインポートするには、JSONファイルを選択してください。</Text>
+              </Space>
+            }
           </Dragger>
-          {fileName && (
-            <div className="file-importer-filename">
-              <Text>{fileName}</Text>
-            </div>
-          )}
-          {fileSelected && (
-            <Button type="primary" size='large' onClick={onShowLayerEditor}>
-              地図を表示する
-            </Button>
-          )}
         </div>
       </Col>
     </Row>
