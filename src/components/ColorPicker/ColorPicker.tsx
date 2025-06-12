@@ -7,7 +7,11 @@ import { styleAtom } from '../../atom';
 
 const { Text } = Typography;
 
-const ColorPicker: React.FC = () => {
+type ColorProps = {
+    savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void
+}
+
+const ColorPicker: React.FC<ColorProps> = ({ savePrevStyle }) => {
     const [colors, setColors] = useState<string[]>(['#fff']);
     const [style, setStyle] = useAtom(styleAtom);
 
@@ -24,6 +28,7 @@ const ColorPicker: React.FC = () => {
                 { primary: colors[0], secondary: colors[1], tertiary: colors[2] },
                 style
             );
+            savePrevStyle(newStyle);
             setStyle(newStyle);
         } catch (e) {
             console.error('スタイル生成に失敗しました', e);

@@ -5,7 +5,11 @@ import { styleAtom } from '../../atom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-const StyleJsonViewer: React.FC = () => {
+type StyleJsonViewerProps = {
+    savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void
+}
+
+const StyleJsonViewer: React.FC<StyleJsonViewerProps> = ({ savePrevStyle }) => {
   const [style, setStyle] = useAtom(styleAtom);
   const [editing, setEditing] = useState(false);
   const [code, setCode] = useState(() => JSON.stringify(style, null, 2));
@@ -22,6 +26,7 @@ const StyleJsonViewer: React.FC = () => {
       setStyle(parsed);
       setEditing(false);
       message.success('style.jsonを更新しました');
+      savePrevStyle(parsed);
     } catch {
       message.error('JSONの形式が正しくありません');
     }
