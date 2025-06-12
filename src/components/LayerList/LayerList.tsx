@@ -7,7 +7,7 @@ import LayerGroupPanel from './LayerGroupPanel';
 
 const LayerList: React.FC = () => {
     const [style, setStyle] = useAtom(styleAtom);
-    const layers = style?.layers || [];
+    const layers = style?.layers ?? [];
     const grouped = groupLayersByType(layers);
 
     const layerGroups = useMemo(() => [

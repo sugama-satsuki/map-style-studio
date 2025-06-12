@@ -16,7 +16,7 @@ export function useMapPopup(map: MapLibreMap | null) {
 
     const handleClick = (e: MapMouseEvent) => {
       const features = map.queryRenderedFeatures(e.point);
-      console.log('Clicked features:', features);
+
       if (features.length > 0) {
         setPopupInfo({
           lngLat: [e.lngLat.lng, e.lngLat.lat],
