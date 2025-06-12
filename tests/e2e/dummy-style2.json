@@ -1,0 +1,79 @@
+{
+  "version": 8,
+  "name": "geoloniamaps/smartcity-base",
+  "glyphs": "https://gsi-cyberjapan.github.io/optimal_bvmap/glyphs/{fontstack}/{range}.pbf",
+  "sprite": [
+    {
+      "id": "default",
+      "url": "https://geolonia.github.io/custom-smartmap-sprite/sprite"
+    },
+    {
+      "id": "geolonia-gsi",
+      "url": "https://api.geolonia.com/v1/sprites/gsi"
+    },
+    {
+      "id": "gsi",
+      "url": "https://gsi-cyberjapan.github.io/optimal_bvmap/sprite/std"
+    }
+  ],
+  "zoom": 4,
+  "center": [
+    137.94,
+    34.55
+  ],
+  "sources": {
+    "gsi": {
+      "type": "vector",
+      "url": "https://tileserver.geolonia.com/geolonia_optimal_bvmap-v1/tiles.json?key=YOUR-API-KEY",
+      "attribution": "<a href=\"https://github.com/gsi-cyberjapan/optimal_bvmap\">国土地理院最適化ベクトルタイル</a> | <a href=\"https://geolonia.com/credit/\">&copy; Geolonia</a>"
+    },
+    "osm": {
+      "type": "vector",
+      "url": "https://tileserver.geolonia.com/chubu_osm_poi/tiles.json?key=YOUR-API-KEY",
+      "attribution": "<a href=\"https://www.openstreetmap.org/copyright\">&copy; OpenStreetMap</a>"
+    }
+  },
+  "metadata": {
+    "geolonia:minzoom": 4,
+    "geolonia:maxzoom": 20
+  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": [
+          "step",
+          [
+            "zoom"
+          ],
+          "#A7DB8D",
+          4,
+          "#D0F0C0",
+          8,
+          "#FFFFFF"
+        ]
+      }
+    },
+    {
+      "id": "gsi/行政区画",
+      "type": "fill",
+      "source": "gsi",
+      "source-layer": "AdmArea",
+      "paint": {
+        "fill-color": "#FFFFFF"
+      }
+    },
+    {
+      "id": "gsi/水域",
+      "maxzoom": 17,
+      "type": "fill",
+      "source": "gsi",
+      "source-layer": "WA",
+      "paint": {
+        "fill-color": "#D4E9E2",
+        "fill-opacity": 1
+      }
+    }
+  ]
+}
