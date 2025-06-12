@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Collapse, Flex, Tooltip, Button, Input, Typography } from 'antd';
-import { EditOutlined, CheckOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, CheckOutlined, CloseOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { LayerSpecification } from 'maplibre-gl';
 
 const { Panel } = Collapse;
@@ -10,12 +10,12 @@ type Props = {
   layer: LayerSpecification;
   editing: { layerId: string; field: 'filter' | 'paint' | 'layout' | null; value: string } | null;
   onEdit: (field: 'filter' | 'paint' | 'layout') => void;
-  onDeleteStyle: (field: 'filter' | 'paint' | 'layout') => void;
+  onResetStyle: (field: 'filter' | 'paint' | 'layout') => void;
   onSave: (field: 'filter' | 'paint' | 'layout', value: string) => void;
   onCancel: () => void;
 };
 
-const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onDeleteStyle, onSave, onCancel }) => {
+const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onResetStyle, onSave, onCancel }) => {
   const [localValue, setLocalValue] = useState<string>('');
   const [localEditing, setLocalEditing] = useState<{ layerId: string; field: 'filter' | 'paint' | 'layout' | null } | null>(null);
 
@@ -68,12 +68,12 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onDelet
                     />
                   </Tooltip>
                 )}
-                <Tooltip title="削除">
+                <Tooltip title="リセット">
                   <Button
                     type="default"
                     shape="circle"
-                    icon={<DeleteOutlined />}
-                    onClick={() => onDeleteStyle(field)}
+                    icon={<ReloadOutlined />}
+                    onClick={() => onResetStyle(field)}
                   />
                 </Tooltip>
               </Flex>

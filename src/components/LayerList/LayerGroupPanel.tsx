@@ -21,13 +21,13 @@ type Props = {
     };
     editing: { layerId: string; field: 'filter' | 'paint' | 'layout' | null; value: string } | null;
     onEdit: (layerId: string, field: 'filter' | 'paint' | 'layout') => void;
-    onDeleteStyle: (field: 'filter' | 'paint' | 'layout') => void;
+    onResetStyle: (field: 'filter' | 'paint' | 'layout') => void;
     onDeleteLayer: (layerId: string) => void;
     onSave: (layerId: string, field: 'filter' | 'paint' | 'layout', value: string) => void;
     onCancel: () => void;
 };
 
-const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit, onDeleteStyle, onDeleteLayer, onSave, onCancel }) => {
+const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit, onResetStyle, onDeleteLayer, onSave, onCancel }) => {
 
     return (
 
@@ -37,7 +37,7 @@ const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit,
                     <Flex justify="space-between" align="center" gap={4}>
                         <Text strong>{group.label}</Text>
                         <Flex justify="right" align="center" gap={4}>
-                            <Text strong>{`${group.layers.length}件`}</Text>
+                            <Text strong>{`${group.layers ? group.layers.length : 0}件`}</Text>
                             <Tooltip title="レイヤーを追加">
                                 <Button type="primary" icon={<PlusOutlined />} />
                             </Tooltip>
@@ -56,7 +56,7 @@ const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit,
                                 layer={item}
                                 editing={editing}
                                 onEdit={field => onEdit(item.id, field)}
-                                onDeleteStyle={field => onDeleteStyle(field)}
+                                onResetStyle={field => onResetStyle(field)}
                                 onDeleteLayer={() => onDeleteLayer(item.id)}
                                 onSave={(field, value) => onSave(item.id, field, value)}
                                 onCancel={onCancel}

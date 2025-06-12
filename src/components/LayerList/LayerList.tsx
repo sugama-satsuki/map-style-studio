@@ -11,10 +11,11 @@ const LayerList: React.FC = () => {
     const grouped = groupLayersByType(layers);
 
     const layerGroups = useMemo(() => [
-        { type: 'point', label: 'point', layers: grouped.point },
+        { type: 'circle', label: 'circle', layers: grouped.point },
         { type: 'symbol', label: 'symbol', layers: grouped.symbol },
         { type: 'line', label: 'line', layers: grouped.line },
-        { type: 'polygon', label: 'polygon', layers: grouped.polygon },
+        { type: 'fill', label: 'fill', layers: grouped.fill },
+        { type: 'other', label: 'other', layers: grouped.other },
     ], [grouped]);
 
     const [editing, setEditing] = useState<{
@@ -27,6 +28,7 @@ const LayerList: React.FC = () => {
 
     // 検索ワードでフィルタリング
     const filteredGroups = useMemo(() => (
+        search === '' ? layerGroups :
         layerGroups.map(group => ({
             ...group,
             layers: group.layers.filter(layer =>
@@ -54,10 +56,18 @@ const LayerList: React.FC = () => {
         }
     };
 
-    // 削除処理（filter/paint/layoutをundefinedにする）
-    const handleDeleteStyle = (layerId: string, field: 'filter' | 'paint' | 'layout') => {
+    // リセット処理（filter/paint/layoutをundefinedにする）
+    const handleResetStyle = (layerId: string, field: 'filter' | 'paint' | 'layout') => {
         const newLayers = layers.map(l =>
-            l.id === layerId ? { ...l, [field]: undefined } : l
+            l.id === layerId
+                ? {
+                    ...l,
+                    [field]:
+                        field === 'filter' ? [] :
+                        field === 'paint' || field === 'layout' ? {} :
+                        undefined
+                }
+                : l
         );
         setStyle({ ...style!, layers: newLayers });
     };
@@ -86,7 +96,7 @@ const LayerList: React.FC = () => {
                     group={group}
                     editing={editing}
                     onEdit={handleEdit}
-                    onDeleteStyle={(field) => handleDeleteStyle(group.layers[0].id, field)}
+                    onResetStyle={(field) => handleResetStyle(group.layers[0].id, field)}
                     onDeleteLayer={() => handleDeleteLayer(group.layers[0].id)}
                     onSave={handleSave}
                     onCancel={handleCancel}
