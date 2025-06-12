@@ -11,10 +11,11 @@ const LayerList: React.FC = () => {
     const grouped = groupLayersByType(layers);
 
     const layerGroups = useMemo(() => [
-        { type: 'point', label: 'point', layers: grouped.point },
+        { type: 'circle', label: 'circle', layers: grouped.point },
         { type: 'symbol', label: 'symbol', layers: grouped.symbol },
         { type: 'line', label: 'line', layers: grouped.line },
-        { type: 'polygon', label: 'polygon', layers: grouped.polygon },
+        { type: 'fill', label: 'fill', layers: grouped.fill },
+        { type: 'other', label: 'other', layers: grouped.other },
     ], [grouped]);
 
     const [editing, setEditing] = useState<{
@@ -27,6 +28,7 @@ const LayerList: React.FC = () => {
 
     // 検索ワードでフィルタリング
     const filteredGroups = useMemo(() => (
+        search === '' ? layerGroups :
         layerGroups.map(group => ({
             ...group,
             layers: group.layers.filter(layer =>

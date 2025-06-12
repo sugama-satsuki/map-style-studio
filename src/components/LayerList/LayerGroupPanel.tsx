@@ -37,7 +37,7 @@ const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit,
                     <Flex justify="space-between" align="center" gap={4}>
                         <Text strong>{group.label}</Text>
                         <Flex justify="right" align="center" gap={4}>
-                            <Text strong>{`${group.layers.length}件`}</Text>
+                            <Text strong>{`${group.layers ? group.layers.length : 0}件`}</Text>
                             <Tooltip title="レイヤーを追加">
                                 <Button type="primary" icon={<PlusOutlined />} />
                             </Tooltip>
