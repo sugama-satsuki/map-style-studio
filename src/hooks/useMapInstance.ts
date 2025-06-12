@@ -1,41 +1,40 @@
-import { useRef, useEffect } from 'react';
-import maplibregl, { Map as MapLibreMap, type StyleSpecification } from 'maplibre-gl';
-import { useSetAtom } from 'jotai';
-import { mapRefAtom } from '../atom';
+import { useEffect } from 'react';
+import maplibregl, { type StyleSpecification } from 'maplibre-gl';
+import { useAtom } from 'jotai';
+import { mapAtom } from '../atom';
 
 export function useMapInstance(
   containerRef: React.RefObject<HTMLDivElement | null>,
   style?: StyleSpecification
 ) {
-  const mapRef = useRef<MapLibreMap | null>(null);
-  const setMapRef = useSetAtom(mapRefAtom);
+  // const mapRef = useRef<MapLibreMap | null>(null);
+  const [map, setMap] = useAtom(mapAtom);
 
   useEffect(() => {
     if (!containerRef.current || !style) return;
 
-    mapRef.current = new maplibregl.Map({
+    const mapObj = new maplibregl.Map({
       container: containerRef.current,
       style,
       center: [139.767, 35.681],
       zoom: 10,
     });
     
-    setMapRef(mapRef.current);
+    setMap(mapObj);
 
     return () => {
-      mapRef.current?.remove();
-      mapRef.current = null;
+      mapObj?.remove();
     };
     
-  }, [containerRef, style]);
+  }, [containerRef, setMap, style]);
 
   useEffect(() => {
-    if (mapRef.current && style) {
-      mapRef.current.setStyle(style);
+    if (map && style) {
+      map.setStyle(style);
     }
-  }, [style]);
+  }, [map, style]);
 
-  return mapRef;
+  return map;
 }
 
 export default useMapInstance;

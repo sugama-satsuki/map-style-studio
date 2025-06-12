@@ -5,7 +5,7 @@ import type { LayerSpecification } from 'maplibre-gl';
 import LayerDetailAccordion from './LayerDetailAccordion';
 import { useLayerVisibility } from '../../hooks/useLayerVisibility';
 import { useAtomValue } from 'jotai';
-import { mapRefAtom } from '../../atom';
+import { mapAtom } from '../../atom';
 
 const { Text } = Typography;
 
@@ -20,7 +20,7 @@ type Props = {
 };
 
 const LayerListItem: React.FC<Props> = ({ layer, editing, onEdit, onDeleteStyle, onDeleteLayer, onSave, onCancel }) => {
-    const mapRef = useAtomValue(mapRefAtom);
+    const mapRef = useAtomValue(mapAtom);
     const { isVisible, toggleVisibility } = useLayerVisibility(mapRef, layer.id);
 
   return (<div style={{ width: '100%', padding: 0 }}>

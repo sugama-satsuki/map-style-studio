@@ -9,8 +9,8 @@ const MapCanvas: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const style = useAtomValue(styleAtom);
 
-  const mapRef = useMapInstance(containerRef, style);
-  const { popupInfo, setPopupInfo } = useMapPopup(mapRef);
+  const map = useMapInstance(containerRef, style);
+  const { popupInfo, setPopupInfo } = useMapPopup(map);
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>

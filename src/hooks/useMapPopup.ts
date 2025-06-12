@@ -8,12 +8,10 @@ export interface MapPopupInfo {
   properties: Record<string, any>[];
 }
 
-export function useMapPopup(mapRef: React.MutableRefObject<MapLibreMap | null>) {
+export function useMapPopup(map: MapLibreMap | null) {
   const [popupInfo, setPopupInfo] = useState<MapPopupInfo | null>(null);
 
   useEffect(() => {
-    const map = mapRef.current;
-    console.log('useMapPopup: mapRef.current', map);
     if (!map) return;
 
     const handleClick = (e: MapMouseEvent) => {
@@ -37,7 +35,7 @@ export function useMapPopup(mapRef: React.MutableRefObject<MapLibreMap | null>) 
     return () => {
       map.off('click', handleClick);
     };
-  }, [mapRef]);
+  }, [map]);
 
   return { popupInfo, setPopupInfo };
 }

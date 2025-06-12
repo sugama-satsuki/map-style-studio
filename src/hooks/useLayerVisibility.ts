@@ -1,32 +1,23 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 /**
  * レイヤーの表示/非表示を管理するカスタムフック
- * @param mapRef maplibre-glのmapインスタンス（useRefで渡す）
+ * @param map maplibre-glのmapインスタンス（useRefで渡す）
  * @returns { isVisible, toggleVisibility }
  */
-export function useLayerVisibility(mapRef: maplibregl.Map | null, layerId: string) {
-  const [isVisible, setIsVisible] = useState(true);
-
-  // レイヤーの可視状態を取得
-  useEffect(() => {
-    if (!mapRef || !layerId) { return; }
-    const map = mapRef;
-    if (!map.getLayer(layerId)) { return; }
-    const visibility = map.getLayoutProperty(layerId, 'visibility');
-    setIsVisible(visibility !== 'none');
-  }, [mapRef, layerId]);
+export function useLayerVisibility(map: maplibregl.Map | null, layerId: string) {
+  const [isVisible, setIsVisible] = useState<boolean>(true);
 
   // 表示/非表示を切り替える
   const toggleVisibility = useCallback(() => {
-    if (!mapRef || !layerId) { return; }
-    const map = mapRef;
+    if (!map || !layerId) { return; }
     if (!map.getLayer(layerId)) { return; }
+    
     const current = map.getLayoutProperty(layerId, 'visibility');
     const next = current === 'none' ? 'visible' : 'none';
     map.setLayoutProperty(layerId, 'visibility', next);
     setIsVisible(next === 'visible');
-  }, [mapRef, layerId]);
+  }, [map, layerId]);
 
   return { isVisible, toggleVisibility };
 }
