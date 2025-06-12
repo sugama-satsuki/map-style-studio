@@ -21,13 +21,13 @@ type Props = {
     };
     editing: { layerId: string; field: 'filter' | 'paint' | 'layout' | null; value: string } | null;
     onEdit: (layerId: string, field: 'filter' | 'paint' | 'layout') => void;
-    onDeleteStyle: (field: 'filter' | 'paint' | 'layout') => void;
+    onResetStyle: (field: 'filter' | 'paint' | 'layout') => void;
     onDeleteLayer: (layerId: string) => void;
     onSave: (layerId: string, field: 'filter' | 'paint' | 'layout', value: string) => void;
     onCancel: () => void;
 };
 
-const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit, onDeleteStyle, onDeleteLayer, onSave, onCancel }) => {
+const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit, onResetStyle, onDeleteLayer, onSave, onCancel }) => {
 
     return (
 
@@ -56,7 +56,7 @@ const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit,
                                 layer={item}
                                 editing={editing}
                                 onEdit={field => onEdit(item.id, field)}
-                                onDeleteStyle={field => onDeleteStyle(field)}
+                                onResetStyle={field => onResetStyle(field)}
                                 onDeleteLayer={() => onDeleteLayer(item.id)}
                                 onSave={(field, value) => onSave(item.id, field, value)}
                                 onCancel={onCancel}

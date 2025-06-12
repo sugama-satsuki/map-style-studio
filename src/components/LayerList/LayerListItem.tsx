@@ -13,13 +13,13 @@ type Props = {
   layer: LayerSpecification;
   editing: { layerId: string; field: 'filter' | 'paint' | 'layout' | null; value: string } | null;
   onEdit: (field: 'filter' | 'paint' | 'layout') => void;
-  onDeleteStyle: (field: 'filter' | 'paint' | 'layout') => void;
+  onResetStyle: (field: 'filter' | 'paint' | 'layout') => void;
   onDeleteLayer: (layerId: string) => void;
   onSave: (field: 'filter' | 'paint' | 'layout', value: string) => void;
   onCancel: () => void;
 };
 
-const LayerListItem: React.FC<Props> = ({ layer, editing, onEdit, onDeleteStyle, onDeleteLayer, onSave, onCancel }) => {
+const LayerListItem: React.FC<Props> = ({ layer, editing, onEdit, onResetStyle, onDeleteLayer, onSave, onCancel }) => {
     const mapRef = useAtomValue(mapAtom);
     const { isVisible, toggleVisibility } = useLayerVisibility(mapRef, layer.id);
 
@@ -49,7 +49,7 @@ const LayerListItem: React.FC<Props> = ({ layer, editing, onEdit, onDeleteStyle,
       layer={layer}
       editing={editing}
       onEdit={onEdit}
-      onDeleteStyle={onDeleteStyle}
+      onResetStyle={onResetStyle}
       onSave={onSave}
       onCancel={onCancel}
     />

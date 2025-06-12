@@ -54,10 +54,18 @@ const LayerList: React.FC = () => {
         }
     };
 
-    // 削除処理（filter/paint/layoutをundefinedにする）
-    const handleDeleteStyle = (layerId: string, field: 'filter' | 'paint' | 'layout') => {
+    // リセット処理（filter/paint/layoutをundefinedにする）
+    const handleResetStyle = (layerId: string, field: 'filter' | 'paint' | 'layout') => {
         const newLayers = layers.map(l =>
-            l.id === layerId ? { ...l, [field]: undefined } : l
+            l.id === layerId
+                ? {
+                    ...l,
+                    [field]:
+                        field === 'filter' ? [] :
+                        field === 'paint' || field === 'layout' ? {} :
+                        undefined
+                }
+                : l
         );
         setStyle({ ...style!, layers: newLayers });
     };
@@ -86,7 +94,7 @@ const LayerList: React.FC = () => {
                     group={group}
                     editing={editing}
                     onEdit={handleEdit}
-                    onDeleteStyle={(field) => handleDeleteStyle(group.layers[0].id, field)}
+                    onResetStyle={(field) => handleResetStyle(group.layers[0].id, field)}
                     onDeleteLayer={() => handleDeleteLayer(group.layers[0].id)}
                     onSave={handleSave}
                     onCancel={handleCancel}
