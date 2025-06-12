@@ -9,6 +9,7 @@ import LayerList from '../LayerList/LayerList';
 import { useAtomValue } from 'jotai';
 import { styleAtom } from '../../atom';
 import FileImporter from '../FileImporter/FileImporter';
+import StyleJsonViewer from '../StyleJsonViewer/StyleJsonViewer';
 
 const { Sider, Content } = Layout;
 const { Title } = Typography;
@@ -37,6 +38,8 @@ const LayerEditor: React.FC = () => {
     sidebarContent = <ColorPicker />;
   } else if (selectedMenu === 'layer') {
     sidebarContent = <LayerList />;
+  } else if (selectedMenu === 'style-viewer') {
+    sidebarContent = <StyleJsonViewer />;
   }
 
   return (
