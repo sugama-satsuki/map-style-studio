@@ -5,7 +5,11 @@ import { styleAtom } from '../../atom';
 import { groupLayersByType } from '../../utils/layerControl';
 import LayerGroupPanel from './LayerGroupPanel';
 
-const LayerList: React.FC = () => {
+type LayerListProps = {
+    savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void
+}
+
+const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
     const [style, setStyle] = useAtom(styleAtom);
     const layers = style?.layers || [];
     const grouped = groupLayersByType(layers);
@@ -28,28 +32,32 @@ const LayerList: React.FC = () => {
 
     // 検索ワードでフィルタリング
     const filteredGroups = useMemo(() => (
-        search === '' ? layerGroups :
-        layerGroups.map(group => ({
-            ...group,
-            layers: group.layers.filter(layer =>
-                layer.id.toLowerCase().includes(search.toLowerCase())
-            ),
-        })).filter(group => group.layers.length > 0)
+        search === '' ? 
+            layerGroups 
+        :
+            layerGroups.map(group => ({
+                ...group,
+                layers: group.layers?.filter(layer =>
+                    layer.id.toLowerCase().includes(search.toLowerCase())
+                ),
+            })).filter(group => (group.layers ?? []).length > 0)
     ), [layerGroups, search]);
 
     // 編集開始
     const handleEdit = (layerId: string, field: 'filter' | 'paint' | 'layout') => {
         setEditing({ layerId, field, value: '' });
+        savePrevStyle(style);
     };
 
     // 編集保存
     const handleSave = (layerId: string, field: 'filter' | 'paint' | 'layout', value: string) => {
         try {
             const newValue = value ? JSON.parse(value) : undefined;
-            const newLayers = layers.map(l =>
+            const newStyle = { ...style!, layers: layers.map(l =>
                 l.id === layerId ? { ...l, [field]: newValue } : l
-            );
-            setStyle({ ...style!, layers: newLayers });
+            )};
+            setStyle(newStyle);
+            savePrevStyle(newStyle);
             setEditing(null);
         } catch {
             // エラー処理
@@ -58,7 +66,7 @@ const LayerList: React.FC = () => {
 
     // リセット処理（filter/paint/layoutをundefinedにする）
     const handleResetStyle = (layerId: string, field: 'filter' | 'paint' | 'layout') => {
-        const newLayers = layers.map(l =>
+        const newStyle = { ...style!, layers: layers.map(l =>
             l.id === layerId
                 ? {
                     ...l,
@@ -68,13 +76,16 @@ const LayerList: React.FC = () => {
                         undefined
                 }
                 : l
-        );
-        setStyle({ ...style!, layers: newLayers });
+        )};
+        setStyle(newStyle);
+        savePrevStyle(newStyle);
     };
+
     // レイヤー削除処理
     const handleDeleteLayer = (layerId: string) => {
-        const newLayers = layers.filter(l => l.id !== layerId);
-        setStyle({ ...style!, layers: newLayers });
+        const newStyle = { ...style!, layers: layers.filter(l => l.id !== layerId) };
+        setStyle(newStyle);
+        savePrevStyle(newStyle);
     };
 
     // 編集キャンセル
