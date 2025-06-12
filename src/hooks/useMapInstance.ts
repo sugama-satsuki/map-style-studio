@@ -7,7 +7,6 @@ export function useMapInstance(
   containerRef: React.RefObject<HTMLDivElement | null>,
   style?: StyleSpecification
 ) {
-  // const mapRef = useRef<MapLibreMap | null>(null);
   const [map, setMap] = useAtom(mapAtom);
 
   useEffect(() => {
@@ -18,6 +17,7 @@ export function useMapInstance(
       style,
       center: [139.767, 35.681],
       zoom: 10,
+      hash: true,
     });
     
     setMap(mapObj);
