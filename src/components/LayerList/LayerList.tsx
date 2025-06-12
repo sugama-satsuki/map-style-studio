@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Input, Space } from 'antd';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
@@ -11,7 +11,7 @@ type LayerListProps = {
 
 const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
     const [style, setStyle] = useAtom(styleAtom);
-    const layers = style?.layers ?? [];
+    const layers = useMemo(() => style?.layers ?? [], [style]);
     const grouped = groupLayersByType(layers);
 
     const layerGroups = useMemo(() => [
@@ -44,13 +44,13 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
     ), [layerGroups, search]);
 
     // 編集開始
-    const handleEdit = (layerId: string, field: 'filter' | 'paint' | 'layout') => {
+    const handleEdit = useCallback((layerId: string, field: 'filter' | 'paint' | 'layout') => {
         setEditing({ layerId, field, value: '' });
         savePrevStyle(style);
-    };
+    }, []);
 
     // 編集保存
-    const handleSave = (layerId: string, field: 'filter' | 'paint' | 'layout', value: string) => {
+    const handleSave = useCallback((layerId: string, field: 'filter' | 'paint' | 'layout', value: string) => {
         try {
             const newValue = value ? JSON.parse(value) : undefined;
             const newStyle = { ...style!, layers: layers.map(l =>
@@ -62,10 +62,10 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
         } catch {
             // エラー処理
         }
-    };
+    }, [layers, style, setStyle, savePrevStyle]);
 
     // リセット処理（filter/paint/layoutをundefinedにする）
-    const handleResetStyle = (layerId: string, field: 'filter' | 'paint' | 'layout') => {
+    const handleResetStyle = useCallback((layerId: string, field: 'filter' | 'paint' | 'layout') => {
         const newStyle = { ...style!, layers: layers.map(l =>
             l.id === layerId
                 ? {
@@ -79,17 +79,17 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
         )};
         setStyle(newStyle);
         savePrevStyle(newStyle);
-    };
+    }, [layers, style, setStyle, savePrevStyle]);
 
     // レイヤー削除処理
-    const handleDeleteLayer = (layerId: string) => {
+    const handleDeleteLayer = useCallback((layerId: string) => {
         const newStyle = { ...style!, layers: layers.filter(l => l.id !== layerId) };
         setStyle(newStyle);
         savePrevStyle(newStyle);
-    };
+    }, [layers, style, setStyle, savePrevStyle]);
 
     // 編集キャンセル
-    const handleCancel = () => setEditing(null);
+    const handleCancel = useCallback(() => setEditing(null), []);
 
     return (
         <Space direction="vertical" style={{ width: '100%', padding: 0 }} size='small'>

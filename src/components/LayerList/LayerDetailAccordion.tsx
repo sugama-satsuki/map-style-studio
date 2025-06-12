@@ -103,4 +103,4 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onReset
   );
 };
 
-export default LayerDetailAccordion;
+export default React.memo(LayerDetailAccordion);
