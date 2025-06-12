@@ -6,6 +6,10 @@ const { Text, Link } = Typography;
 
 const items = [
     {
+        key: 'create-style',
+        label: '新規作成',
+    },
+    {
         key: 'theme',
         label: 'テーマ編集',
     },
@@ -14,9 +18,9 @@ const items = [
         label: 'レイヤー単位編集',
     },
     {
-        key: 'create-style',
-        label: '新規作成',
-    },
+        key: 'style-viewer',
+        label: 'jsonビューア',
+    }
 ];
 
 interface Props {
