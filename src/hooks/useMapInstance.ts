@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import maplibregl, { type StyleSpecification } from 'maplibre-gl';
 import { useAtom } from 'jotai';
 import { mapAtom } from '../atom';
@@ -8,6 +8,7 @@ export function useMapInstance(
   style?: StyleSpecification
 ) {
   const [map, setMap] = useAtom(mapAtom);
+  const prevStyleRef = useRef<StyleSpecification | undefined>(undefined);
 
   useEffect(() => {
     if (!containerRef.current || !style) return;
@@ -19,9 +20,12 @@ export function useMapInstance(
       zoom: 10,
       hash: true,
     });
-    
-    setMap(mapObj);
 
+    mapObj.on('load', () => {
+      prevStyleRef.current = style;
+      setMap(mapObj);
+    });
+    
     return () => {
       mapObj?.remove();
     };
@@ -29,7 +33,10 @@ export function useMapInstance(
   }, [containerRef, setMap, style]);
 
   useEffect(() => {
-    if (map && style) {
+    if (map && style && prevStyleRef.current !== style) {
+      map.once('styledata', () => {
+        prevStyleRef.current = style;
+      });
       map.setStyle(style);
     }
   }, [map, style]);

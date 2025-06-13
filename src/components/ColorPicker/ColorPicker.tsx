@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Space, Typography, ColorPicker as AntdColorPicker, Flex, Button } from 'antd';
 import { BgColorsOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
-import { sendToOpenAI } from '../../utils/generateStyleFromTheme';
+import { generateStyleFromTheme } from '../../utils/generateStyleFromTheme';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 
@@ -24,7 +24,7 @@ const ColorPicker: React.FC<ColorProps> = ({ savePrevStyle }) => {
     const generateStyleByTheme = async () => {
         if (!style) return;
         try {
-            const newStyle = await sendToOpenAI(
+            const newStyle = await generateStyleFromTheme(
                 { primary: colors[0], secondary: colors[1], tertiary: colors[2] },
                 style
             );
