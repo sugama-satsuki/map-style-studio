@@ -69,4 +69,4 @@ const MapCanvas: React.FC = () => {
   );
 };
 
-export default MapCanvas;
+export default React.memo(MapCanvas);

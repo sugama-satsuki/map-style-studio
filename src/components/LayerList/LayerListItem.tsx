@@ -56,4 +56,4 @@ const LayerListItem: React.FC<Props> = ({ layer, editing, onEdit, onResetStyle, 
   </div>)
 };
 
-export default LayerListItem;
+export default React.memo(LayerListItem);
