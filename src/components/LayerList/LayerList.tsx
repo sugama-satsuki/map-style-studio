@@ -53,9 +53,20 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
     const handleSave = useCallback((layerId: string, field: 'filter' | 'paint' | 'layout', value: string) => {
         try {
             const newValue = value ? JSON.parse(value) : undefined;
-            const newStyle = { ...style!, layers: layers.map(l =>
-                l.id === layerId ? { ...l, [field]: newValue } : l
-            )};
+            const newStyle = { 
+                ...style!, 
+                layers: layers.map(l =>
+                    l.id === layerId
+                    ? {
+                        ...l,
+                        [field]: newValue,
+                        layout: field === 'layout'
+                            ? (newValue ?? {})
+                            : (l.layout === undefined ? {} : l.layout)
+                        }
+                    : l
+                )
+            };
             setStyle(newStyle);
             savePrevStyle(newStyle);
             setEditing(null);

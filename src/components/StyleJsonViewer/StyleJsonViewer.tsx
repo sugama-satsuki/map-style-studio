@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Button, message } from 'antd';
+import { Button, message } from 'antd';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -38,9 +38,10 @@ const StyleJsonViewer: React.FC<StyleJsonViewerProps> = ({ savePrevStyle }) => {
   };
 
   return (
-    <Card
-      title="style.json ビューア"
-      extra={
+    <div
+      style={{ width: '100%', height: '100%', padding: 0 }}
+    >
+      <div>{
         editing ? (
           <>
             <Button type="primary" size="small" onClick={handleSave} style={{ marginRight: 8 }}>
@@ -55,17 +56,15 @@ const StyleJsonViewer: React.FC<StyleJsonViewerProps> = ({ savePrevStyle }) => {
             編集
           </Button>
         )
-      }
-      id="style-json-viewer"
-      style={{ width: '100%', height: '100%', padding: 0 }}
-    >
+      }</div>
       {editing ? (
         <textarea
           value={code}
           onChange={e => setCode(e.target.value)}
           style={{
             width: '100%',
-            height: 350,
+            minHeight: '650px',
+            height: '100%',
             fontFamily: 'monospace',
             fontSize: 14,
             background: '#1e1e1e',
@@ -75,11 +74,11 @@ const StyleJsonViewer: React.FC<StyleJsonViewerProps> = ({ savePrevStyle }) => {
           }}
         />
       ) : (
-        <SyntaxHighlighter language="json" style={vscDarkPlus} customStyle={{ margin: 0, background: '#1e1e1e', height: '100%' }}>
+        <SyntaxHighlighter language="json" style={vscDarkPlus} customStyle={{ margin: 0, background: '#1e1e1e', height: '100%', width: '100%', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
           {JSON.stringify(style, null, 2)}
         </SyntaxHighlighter>
       )}
-    </Card>
+    </div>
   );
 };
 
