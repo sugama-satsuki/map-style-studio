@@ -7,7 +7,7 @@ export type ThemeColorsType = {
 };
 
 // ユーティリティ: rgba()→HEX変換
-function rgbaToHex(rgba: string): string {
+export function rgbaToHex(rgba: string): string {
   const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
   if (!match) return rgba;
   const r = parseInt(match[1]);
@@ -24,7 +24,7 @@ function rgbaToHex(rgba: string): string {
 }
 
 // レイヤー名から種別を推測
-function guessLayerType(layer: LayerSpecification): "building" | "road" | "background" | "other" {
+export function guessLayerType(layer: LayerSpecification): "building" | "road" | "background" | "other" {
   const id = layer.id.toLowerCase();
   if (id.includes("building") || id.includes("建物")) return "building";
   if (id.includes("road") || id.includes("highway") || id.includes("道路")) return "road";
@@ -33,7 +33,7 @@ function guessLayerType(layer: LayerSpecification): "building" | "road" | "backg
 }
 
 // 色をテーマに置換
-function getThemeColor(type: "building" | "road" | "background" | "other", theme: ThemeColorsType) {
+export function getThemeColor(type: "building" | "road" | "background" | "other", theme: ThemeColorsType) {
   if (type === "building") return theme.primary;
   if (type === "road") return theme.secondary || theme.primary;
   if (type === "background") return theme.tertiary || theme.secondary || theme.primary;
@@ -41,13 +41,14 @@ function getThemeColor(type: "building" | "road" | "background" | "other", theme
 }
 
 // "fill-color"・"line-color"・"background-color" の値を置換
-function replaceColorValue(value: unknown, themeColor: string): unknown {
-  // match/step/interpolateなど式の場合はそのまま返す
+export function replaceColorValue(value: unknown, themeColor: string): unknown {
   if (Array.isArray(value)) return value;
   if (typeof value === "string") {
-    // rgba()→HEX変換
     let color = value;
-    if (/^rgba?\(/.test(color)) color = rgbaToHex(color);
+    // rgb/rgba形式ならhexに変換
+    if (/^rgba?\(/.test(color)) {
+      color = rgbaToHex(color);
+    }
     // HEXやrgb/rgba/hsl/hslaならテーマカラーに置換
     if (
       /^#([0-9a-f]{3,8})$/i.test(color) ||
@@ -56,29 +57,114 @@ function replaceColorValue(value: unknown, themeColor: string): unknown {
     ) {
       return themeColor;
     }
+    // rgb/rgba形式だった場合はhexに変換して返す
+    if (/^#([0-9a-f]{3,8})$/i.test(color)) {
+      return color;
+    }
   }
   return value;
 }
 
-// テーマカラーを薄めるユーティリティ
-function lightenColor(hex: string, amount = 0.5): string {
-  // hex: "#rrggbb" or "#rgb"
-  let c = hex.replace('#', '');
-  if (c.length === 3) {
-    c = c.split('').map(x => x + x).join('');
+// ユーティリティ: HEXカラーの明度・彩度を調整
+export function hexToHsl(hex: string): [number, number, number] {
+  if (!hex || typeof hex !== "string" || !/^#?[0-9a-fA-F]{3,8}$/.test(hex)) {
+    // デフォルト: 白
+    return [0, 0, 1];
   }
-  const num = parseInt(c, 16);
-  let r = (num >> 16) & 0xff;
-  let g = (num >> 8) & 0xff;
-  let b = num & 0xff;
-  r = Math.round(r + (255 - r) * amount);
-  g = Math.round(g + (255 - g) * amount);
-  b = Math.round(b + (255 - b) * amount);
-  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  let c = hex.replace('#', '');
+  if (c.length === 3) c = c.split('').map(x => x + x).join('');
+  const r = parseInt(c.substring(0, 2), 16) / 255;
+  const g = parseInt(c.substring(2, 4), 16) / 255;
+  const b = parseInt(c.substring(4, 6), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+  return [h * 360, s, l];
+}
+
+export function hslToHex(h: number, s: number, l: number): string {
+  h /= 360;
+  let r, g, b;
+  if (s === 0) {
+    r = g = b = l;
+  } else {
+    const hue2rgb = (p: number, q: number, t: number) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    };
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
+  }
+  return (
+    '#' +
+    [r, g, b]
+      .map(x => Math.round(x * 255).toString(16).padStart(2, '0'))
+      .join('')
+  );
+}
+
+// sRGBの相対輝度を計算
+export function getLuminance(hex: string): number {
+  let c = hex.replace('#', '');
+  if (c.length === 3) c = c.split('').map(x => x + x).join('');
+  const r = parseInt(c.substring(0, 2), 16) / 255;
+  const g = parseInt(c.substring(2, 4), 16) / 255;
+  const b = parseInt(c.substring(4, 6), 16) / 255;
+  // sRGB → 線形RGB
+  const toLinear = (v: number) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+  const R = toLinear(r);
+  const G = toLinear(g);
+  const B = toLinear(b);
+  // 輝度計算
+  return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+}
+
+// テーマカラー配列から一番明るい色を取得
+export function getBrightestColor(theme: ThemeColorsType): string {
+  const colors = [theme.primary, theme.secondary, theme.tertiary].filter((c): c is string => !!c);
+  if (colors.length === 0) { return "#ffffff"; }
+  let brightest = colors[0];
+  let maxLum = -1;
+  for (const color of colors) {
+    const lum = getLuminance(rgbaToHex(color));
+    if (lum > maxLum) {
+      maxLum = lum;
+      brightest = color;
+    }
+  }
+  return brightest;
+}
+
+
+export function getBackgroundColor(hex: string): string {
+  const [h, s, l] = hexToHsl(hex);
+  const newL = Math.min(0.93, l + 0.18); // 明度のみ上げる
+  return hslToHex(h, s, newL);
 }
 
 export const generateStyleFromTheme = async (theme: ThemeColorsType, originalStyle: StyleSpecification) => {
   const newStyle: StyleSpecification = JSON.parse(JSON.stringify(originalStyle));
+
+  // 背景色用に一番明るい色を取得し、明度のみ調整（彩度はそのまま）
+  const brightest = getBrightestColor(theme);
+  const backgroundColor = getBackgroundColor(rgbaToHex(brightest));
 
   newStyle.layers = newStyle.layers.map(layer => {
     const type = guessLayerType(layer);
@@ -87,8 +173,7 @@ export const generateStyleFromTheme = async (theme: ThemeColorsType, originalSty
     const paint = { ...layer.paint } as Record<string, unknown>;
 
     if (layer.type === "background") {
-      const baseColor = getThemeColor("background", theme);
-      paint["background-color"] = lightenColor(baseColor, 0.6);
+      paint["background-color"] = backgroundColor;
     } else {
       ["fill-color", "line-color", "background-color"].forEach(key => {
         if (paint && paint[key] !== undefined) {
@@ -97,9 +182,7 @@ export const generateStyleFromTheme = async (theme: ThemeColorsType, originalSty
       });
     }
 
-    // layoutがundefinedなら空オブジェクトに
     const layout = layer.layout === undefined ? {} : layer.layout;
-
     return { ...layer, paint, layout };
   });
 
