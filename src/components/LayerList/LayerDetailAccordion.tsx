@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Collapse, Flex, Tooltip, Button, Input, Typography } from 'antd';
 import { EditOutlined, CheckOutlined, CloseOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { LayerSpecification } from 'maplibre-gl';
+import { useColorfulJson } from '../../utils/renderColorfulJson';
 
 const { Panel } = Collapse;
 const { Text } = Typography;
@@ -19,9 +20,13 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onReset
   const [localValue, setLocalValue] = useState<string>('');
   const [localEditing, setLocalEditing] = useState<{ layerId: string; field: 'filter' | 'paint' | 'layout' | null } | null>(null);
 
-    useEffect(() => {
-        setLocalEditing(editing);
-    }, [editing]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const jsonStr = JSON.stringify((layer as any)['paint'], null, 2) || '';
+  const colorful = useColorfulJson(jsonStr);
+
+  useEffect(() => {
+    setLocalEditing(editing);
+  }, [editing]);
 
   useEffect(() => {
     if (localEditing?.layerId === layer.id && localEditing?.field) {
@@ -33,7 +38,8 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onReset
 
   return (
     <Collapse ghost size="small" style={{ width: '100%', padding: 0 }}>
-      {(['filter', 'paint', 'layout'] as const).map(field => (
+      {(['filter', 'paint', 'layout'] as const).map(field => {
+      return (
         <Panel
           header={
             <Flex justify="space-between" align="center">
@@ -87,18 +93,23 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onReset
               value={localValue}
               onChange={e => setLocalValue(e.target.value)}
               autoSize={{ minRows: 4 }}
-              style={{ backgroundColor: '#fbfbfb'}}
+              style={{ backgroundColor: '#fbfbfb' }}
             />
           ) : (
             <pre style={{ whiteSpace: 'pre-wrap' }}>
               {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                JSON.stringify((layer as any)[field], null, 2)
+                field === 'paint' ? 
+                  colorful 
+                : (
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  JSON.stringify((layer as any)[field], null, 2)
+                )
               }
             </pre>
           )}
         </Panel>
-      ))}
+      );
+      })}
     </Collapse>
   );
 };
