@@ -19,7 +19,7 @@ const items = [
     },
     {
         key: 'style-viewer',
-        label: 'jsonビューア',
+        label: 'json編集',
     }
 ];
 

@@ -79,13 +79,13 @@ const LayerEditor: React.FC = () => {
       </Header>
       <Layout style={{ height: 'calc(100vh - 64px)' }}>
         <Sider
-          width={ sidebarContent ? 550 : 200}
+          width={ sidebarContent ? 665 : 200}
           data-testid="sidebar"
           className="layer-editor-sidebar"
         >
           <Flex justify='space-between' align='start' style={{ height: '100%' }}>
             <Sidebar selectedMenu={selectedMenu} onChangeMenu={setSelectedMenu} />
-            <Card style={{ width: 350, backgroundColor: '#f9f8f8', height: '100%', overflowY: 'scroll' }} size='small'>
+            <Card style={{ width: 465, backgroundColor: '#f9f8f8', height: '100%', overflowY: 'scroll' }} size='small'>
               { sidebarContent }
             </Card>
           </Flex>
