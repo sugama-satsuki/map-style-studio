@@ -1,11 +1,11 @@
 import './App.css'
-import LayerEditor from './components/LayerEditor/LayerEditor'
+import StyleEditor from './components/StyleEditor/StyleEditor'
 
 function App() {
 
   return (
     <>
-      <LayerEditor />
+      <StyleEditor />
     </>
   )
 }

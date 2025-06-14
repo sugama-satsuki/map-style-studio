@@ -9,7 +9,7 @@ const { Text } = Typography;
 const { Dragger } = Upload;
 
 type Props = {
-  onShowLayerEditor?: () => void;
+  onShowStyleEditor?: () => void;
 };
 
 const FileImporter: React.FC<Props> = () => {

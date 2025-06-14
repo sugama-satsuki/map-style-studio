@@ -5,3 +5,23 @@ body, #root {
   width: 100%;
   height: 100%;
 }
+
+.editor-card {
+  width: 505px;
+  background-color: #f9f8f8;
+  height: 100%;
+}
+
+#layer-editor .ant-tabs-nav {
+  margin-bottom: 0;
+}
+#layer-editor .ant-tabs-content-holder {
+  height: calc(100vh - 156px);
+  overflow-y: scroll;
+  padding: 8px 0;
+  scrollbar-width: none;         /* Firefox */
+  -ms-overflow-style: none;      /* IE, Edge */
+}
+#layer-editor .ant-tabs-content-holder::-webkit-scrollbar {
+  display: none;                 /* Chrome, Safari */
+}

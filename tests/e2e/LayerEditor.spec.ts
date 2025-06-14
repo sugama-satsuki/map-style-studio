@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-test.describe('LayerEditor', () => {
+test.describe('StyleEditor', () => {
 
   test('ヘッダーにタイトルとstyleダウンロードボタンが表示される', async ({ page }) => {
     await page.goto('/');
