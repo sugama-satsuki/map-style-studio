@@ -15,6 +15,7 @@ import StyleUrlLoader from '../StyleUrlLoader/StyleUrlLoader';
 import BasicInfo from '../BasicInfo/BasicInfo';
 import LayerEditor from '../LayerEditor/LayerEditor';
 import SourceEditor from '../SourceEditor/SourceEditor';
+import SpriteEditor from '../SpriteEditor/SpriteEditor';
 
 
 const { Sider, Content } = Layout;
@@ -61,6 +62,8 @@ const StyleEditor: React.FC = () => {
     sidebarContent = <BasicInfo />;
   } else if (selectedMenu === 'sources') {
     sidebarContent = <SourceEditor savePrevStyle={savePrevStyle} />;
+  } else if (selectedMenu === 'sprite') {
+    sidebarContent = <SpriteEditor savePrevStyle={savePrevStyle} />;
   } else if (selectedMenu === 'layer') {
     sidebarContent = <LayerEditor savePrevStyle={savePrevStyle} />;
   } else if (selectedMenu === 'style-viewer') {

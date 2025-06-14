@@ -45,17 +45,19 @@ const FileImporter: React.FC<Props> = () => {
       <Col>
         <div className="file-importer-container">
           <Dragger {...props} showUploadList={false} style={{ backgroundColor: '#fff' }}>
-            {spinning ?
-              <Spin spinning={spinning} tip="styleを読み込んでいます" />
-              :
+            {spinning ? (
+              <Spin spinning={spinning} tip="styleを読み込んでいます">
+                <div style={{ height: 80, minWidth: 200 }} />
+              </Spin>
+            ) : (
               <Space direction="vertical">
                 <p className="ant-upload-drag-icon">
                   <InboxOutlined />
                 </p>
-                <Text strong>クリックまたはファイルをドラッグしてアップロード</Text>
-                <Text type="secondary">地図スタイルをインポートするには、JSONファイルを選択してください。</Text>
+                <Text strong>ローカルファイルをアップロード</Text>
+                <Text>クリックまたはファイルをドラッグ</Text>
               </Space>
-            }
+            )}
           </Dragger>
         </div>
       </Col>
