@@ -11,6 +11,10 @@ body, #root {
   overflow-y: auto;
 }
 
+.margin-none {
+  margin: 0 !important;
+}
+
 
 /* custom style */
 

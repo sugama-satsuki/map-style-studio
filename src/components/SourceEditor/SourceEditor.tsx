@@ -1,28 +1,74 @@
 import React, { useMemo, useState } from 'react';
-import { Input, Button, Space, Typography, Card, message, Modal, List } from 'antd';
+import { Input, Button, Space, Typography, Card, message, Modal, List, Flex, Select } from 'antd';
 import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
-import type { LayerSpecification } from 'maplibre-gl';
+import type { LayerSpecification, SourceSpecification } from 'maplibre-gl';
 
 type SourcesProps = {
   savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void;
 };
 
-const { TextArea } = Input;
 const { Title, Text } = Typography;
+
+const SOURCE_TYPES = [
+  { label: 'vector', value: 'vector' },
+  { label: 'raster', value: 'raster' },
+  { label: 'geojson', value: 'geojson' },
+  { label: 'raster-dem', value: 'raster-dem' },
+  { label: 'image', value: 'image' },
+  { label: 'video', value: 'video' },
+];
 
 const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
   const [style, setStyle] = useAtom(styleAtom);
   const [modalOpen, setModalOpen] = useState(false);
   const [targetSourceId, setTargetSourceId] = useState<string | null>(null);
   const [referencedLayers, setReferencedLayers] = useState<LayerSpecification[]>([]);
+  const [editSources, setEditSources] = useState<Record<string, Partial<SourceSpecification & { url?: string, attribution?: string, tiles?: string[] }>>>( {});
 
   // sourcesを取得
-  const sources = useMemo(
-    () => style?.sources ?? {},
-    [style]
-  );
+  const sources = useMemo(() => style?.sources ?? {}, [style]);
+
+  // 編集用state初期化
+  React.useEffect(() => {
+    const initial: Record<string, Partial<SourceSpecification>> = {};
+    Object.entries(sources).forEach(([id, src]) => {
+      initial[id] = { ...src };
+    });
+    setEditSources(initial);
+  }, [sources]);
+
+  // 入力変更
+  const handleChange = (sourceId: string, key: string, value: string | string[] | number | undefined) => {
+    setEditSources(prev => ({
+      ...prev,
+      [sourceId]: { ...prev[sourceId], [key]: value }
+    }));
+  };
+
+  // 保存
+  const handleSave = () => {
+    try {
+      const newSources: Record<string, SourceSpecification> = {};
+      Object.entries(editSources).forEach(([id, src]) => {
+        // type, url, attribution など必要な項目のみ
+        const { type, url, attribution, ...rest } = src;
+        newSources[id] = {
+          ...(type ? { type } : {}),
+          ...(url ? { url } : {}),
+          ...(attribution ? { attribution } : {}),
+          ...rest,
+        } as SourceSpecification;
+      });
+      const newStyle = { ...style!, sources: newSources };
+      savePrevStyle(style);
+      setStyle(newStyle);
+      message.success('sourcesを保存しました');
+    } catch {
+      message.error('保存に失敗しました');
+    }
+  };
 
   // ソース削除
   const handleDelete = (sourceId: string) => {
@@ -73,37 +119,88 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
   return (
     <Card className='editor-card scroll-y' id='layer-editor' size='small'>
       <Space direction="vertical" style={{ width: '100%' }} size="middle">
-        {
-          sources && Object.keys(sources).length > 0 ? (
-            Object.keys(sources).map((sourceId, index) => {
-              const source = sources[sourceId];
-              return (
-                <div key={index} style={{ position: 'relative', marginBottom: 16 }}>
-                  <Title level={4} style={{ display: 'inline-block', marginRight: 8 }}>{sourceId}</Title>
+        {sources && Object.keys(sources).length > 0 ? (
+          Object.keys(sources).map((sourceId, index) => {
+            const source = editSources[sourceId] || {};
+            return (
+              <Space key={index} size="small" direction="vertical" style={{ width: '100%' }}>
+                <Flex justify='space-between' align='center' style={{ width: '100%' }}>
+                  <Title level={4} className='margin-none'>{sourceId}</Title>
                   <Button
                     type="dashed"
                     shape="circle"
                     icon={<CloseOutlined />}
-                    size="small"
-                    danger
                     aria-label={`${sourceId}を削除`}
-                    style={{ position: 'absolute', right: 0, top: 0 }}
                     onClick={() => handleDelete(sourceId)}
                   />
-                  <TextArea
-                    rows={4}
-                    value={JSON.stringify(source, null, 2)}
-                    readOnly
-                    style={{ width: '100%', marginTop: 8 }}
+                </Flex>
+                <Space direction="vertical" style={{ width: '100%' }} size="small">
+                  <div>
+                    <label>type</label>
+                    <Select
+                      style={{ width: 120, marginLeft: 8 }}
+                      value={source.type}
+                      options={SOURCE_TYPES}
+                      onChange={v => handleChange(sourceId, 'type', v)}
+                      allowClear
+                    />
+                  </div>
+                  {source.tiles && Array.isArray(source.tiles) && source.tiles.length > 0 ? (
+                    <Input
+                        addonBefore="tiles"
+                        placeholder="tiles（カンマ区切り可）"
+                        value={Array.isArray(source.tiles) ? source.tiles.join(',') : ''}
+                        onChange={e =>
+                        handleChange(
+                            sourceId,
+                            'tiles',
+                            e.target.value
+                            ? e.target.value.split(',').map(s => s.trim()).filter(Boolean)
+                            : undefined
+                        )
+                        }
+                    />
+                    ) : (
+                    (!source.type || source.type !== 'geojson') && (
+                        <Input
+                        addonBefore="url"
+                        placeholder="url"
+                        value={(source as Partial<SourceSpecification & { url?: string }>).url ?? ''}
+                        onChange={e => handleChange(sourceId, 'url', e.target.value)}
+                        />
+                    )
+                    )
+                  }
+                  <Input
+                    addonBefore="attribution"
+                    placeholder="attribution"
+                    value={source.attribution ?? ''}
+                    onChange={e => handleChange(sourceId, 'attribution', e.target.value)}
                   />
-                </div>
-              );
-            })
-          )
-            : (
-              <Text type="secondary">sourcesが定義されていません</Text>
-            )
-        }
+                  <Input
+                    addonBefore="minzoom"
+                    placeholder="minzoom"
+                    type="number"
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    value={(source as any).minzoom ?? ''}
+                    onChange={e => handleChange(sourceId, 'minzoom', e.target.value === '' ? undefined : Number(e.target.value))}
+                  />
+                  <Input
+                    addonBefore="maxzoom"
+                    placeholder="maxzoom"
+                    type="number"
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    value={(source as any).maxzoom ?? ''}
+                    onChange={e => handleChange(sourceId, 'maxzoom', e.target.value === '' ? undefined : Number(e.target.value))}
+                  />
+                </Space>
+              </Space>
+            );
+          })
+        ) : (
+          <Text type="secondary">sourcesが定義されていません</Text>
+        )}
+        <Button type='primary' onClick={handleSave}>保存</Button>
         <Button type='default' icon={<PlusOutlined />} size='large'>ソースを追加</Button>
       </Space>
       <Modal
