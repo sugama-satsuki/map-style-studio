@@ -13,8 +13,6 @@ test.describe('LayerListItem', () => {
     const filePath = path.resolve(__dirname, 'dummy-style2.json');
     await page.setInputFiles('input[type="file"]', filePath);
     await page.waitForTimeout(15000);
-
-    console.log(await page.content());
     // // レイヤー名が表示されている
     // await expect(page.getByText('行政区画')).toBeVisible();
 

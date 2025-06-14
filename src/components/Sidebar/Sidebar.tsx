@@ -6,20 +6,24 @@ const { Text, Link } = Typography;
 
 const items = [
     {
-        key: 'create-style',
-        label: '新規作成',
+        key: 'basic-info',
+        label: '基本情報',
     },
     {
-        key: 'theme',
-        label: 'テーマ編集',
+        key: 'sprite',
+        label: 'スプライト',
+    },
+    {
+        key: 'sources',
+        label: 'ソース',
     },
     {
         key: 'layer',
-        label: 'レイヤー単位編集',
+        label: 'レイヤー',
     },
     {
-        key: 'style-viewer',
-        label: 'json編集',
+        key: 'style',
+        label: 'json全体',
     }
 ];
 

@@ -9,7 +9,7 @@ const { Text } = Typography;
 const { Dragger } = Upload;
 
 type Props = {
-  onShowLayerEditor?: () => void;
+  onShowStyleEditor?: () => void;
 };
 
 const FileImporter: React.FC<Props> = () => {
@@ -37,14 +37,11 @@ const FileImporter: React.FC<Props> = () => {
         setSpinning(false);
       };
       reader.readAsText(file as File);
-    },
-    onDrop(e) {
-      console.log('Dropped files', e.dataTransfer.files);
-    },
+    }
   };
 
   return (
-    <Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
+    <Row justify="center" align="middle">
       <Col>
         <div className="file-importer-container">
           <Dragger {...props} showUploadList={false} style={{ backgroundColor: '#fff' }}>
