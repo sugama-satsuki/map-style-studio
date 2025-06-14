@@ -10,7 +10,10 @@ import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 import FileImporter from '../FileImporter/FileImporter';
 import StyleJsonViewer from '../StyleJsonViewer/StyleJsonViewer';
-import { UndoOutlined } from '@ant-design/icons';
+import { FileOutlined, UndoOutlined } from '@ant-design/icons';
+import sampleStyle from '../../assets/sample-style.json';
+import type { StyleSpecification } from 'maplibre-gl';
+
 
 const { Sider, Content } = Layout;
 const { Title } = Typography;
@@ -44,6 +47,10 @@ const LayerEditor: React.FC = () => {
       setStyle(prevStyleRef.current);
       prevStyleRef.current = null;
     }
+  };
+
+  const handleOpenSampleStyle = () => {
+    setStyle(sampleStyle as unknown as StyleSpecification);
   };
 
   // サイドバー内で表示するコンポーネントを切り替え
@@ -98,7 +105,23 @@ const LayerEditor: React.FC = () => {
             { style ? 
               <MapCanvas />
               :
-              <FileImporter />
+              <Flex
+                vertical
+                justify='center'
+                align='center'
+                gap={16}
+                style={{ textAlign: 'center', padding: '20px', height: '100%' }}
+              >
+                <Button
+                  type="default" 
+                  size='large' 
+                  icon={<FileOutlined />}
+                  onClick={handleOpenSampleStyle}
+                >
+                  サンプルスタイルを開く
+                </Button>
+                <FileImporter />
+              </Flex>
             }
           </Content>
         </Layout>

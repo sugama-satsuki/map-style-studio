@@ -44,7 +44,7 @@ const FileImporter: React.FC<Props> = () => {
   };
 
   return (
-    <Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
+    <Row justify="center" align="middle">
       <Col>
         <div className="file-importer-container">
           <Dragger {...props} showUploadList={false} style={{ backgroundColor: '#fff' }}>
