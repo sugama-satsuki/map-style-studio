@@ -37,10 +37,7 @@ const FileImporter: React.FC<Props> = () => {
         setSpinning(false);
       };
       reader.readAsText(file as File);
-    },
-    onDrop(e) {
-      console.log('Dropped files', e.dataTransfer.files);
-    },
+    }
   };
 
   return (
