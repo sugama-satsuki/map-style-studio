@@ -14,6 +14,7 @@ import type { StyleSpecification } from 'maplibre-gl';
 import StyleUrlLoader from '../StyleUrlLoader/StyleUrlLoader';
 import BasicInfo from '../BasicInfo/BasicInfo';
 import LayerEditor from '../LayerEditor/LayerEditor';
+import SourceEditor from '../SourceEditor/SourceEditor';
 
 
 const { Sider, Content } = Layout;
@@ -58,6 +59,8 @@ const StyleEditor: React.FC = () => {
   let sidebarContent = null;
   if (selectedMenu === 'basic-info') {
     sidebarContent = <BasicInfo />;
+  } else if (selectedMenu === 'sources') {
+    sidebarContent = <SourceEditor savePrevStyle={savePrevStyle} />;
   } else if (selectedMenu === 'layer') {
     sidebarContent = <LayerEditor savePrevStyle={savePrevStyle} />;
   } else if (selectedMenu === 'style-viewer') {

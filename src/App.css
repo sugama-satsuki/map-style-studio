@@ -6,6 +6,14 @@ body, #root {
   height: 100%;
 }
 
+/* common style */
+.scroll-y {
+  overflow-y: auto;
+}
+
+
+/* custom style */
+
 .editor-card {
   width: 505px;
   background-color: #f9f8f8;
