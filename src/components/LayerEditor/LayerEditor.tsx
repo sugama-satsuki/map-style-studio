@@ -13,10 +13,11 @@ import StyleJsonViewer from '../StyleJsonViewer/StyleJsonViewer';
 import { FileOutlined, UndoOutlined } from '@ant-design/icons';
 import sampleStyle from '../../assets/sample-style.json';
 import type { StyleSpecification } from 'maplibre-gl';
+import StyleUrlLoader from '../StyleUrlLoader/StyleUrlLoader';
 
 
 const { Sider, Content } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const LayerEditor: React.FC = () => {
 
@@ -114,12 +115,15 @@ const LayerEditor: React.FC = () => {
               >
                 <Button
                   type="default" 
-                  size='large' 
+                  size='large'
                   icon={<FileOutlined />}
                   onClick={handleOpenSampleStyle}
                 >
                   サンプルスタイルを開く
                 </Button>
+                <Text strong>OR</Text>
+                <StyleUrlLoader />
+                <Text strong>OR</Text>
                 <FileImporter />
               </Flex>
             }
