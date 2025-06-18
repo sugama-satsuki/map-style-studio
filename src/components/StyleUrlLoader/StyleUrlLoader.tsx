@@ -9,19 +9,15 @@ const StyleUrlLoader: React.FC = () => {
     const [loading, setLoading] = useState(false);
 
     const handleLoad = async () => {
-        if (!url) {
+        if (!url || url.trim() === '') {
             message.warning('URLを入力してください');
             return;
         }
         setLoading(true);
         try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('取得に失敗しました');
-            const json = await res.json();
-            setStyle(json);
+            setStyle(url);
             message.success('style.jsonを読み込みました');
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (e) {
+        } catch {
             message.error('style.jsonの読み込みに失敗しました');
         } finally {
             setLoading(false);

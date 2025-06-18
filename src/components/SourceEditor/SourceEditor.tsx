@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Input, Button, Space, Typography, Card, message, Modal, List, Flex, Select } from 'antd';
 import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
 import { useAtom } from 'jotai';
@@ -28,10 +28,10 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
   const [editSources, setEditSources] = useState<Record<string, Partial<SourceSpecification & { url?: string, attribution?: string, tiles?: string[] }>>>( {});
 
   // sourcesを取得
-  const sources = useMemo(() => style?.sources ?? {}, [style]);
+  const sources = useMemo(() => (typeof style === 'object' && style?.sources) ?? {}, [style]);
 
   // 編集用state初期化
-  React.useEffect(() => {
+  useEffect(() => {
     const initial: Record<string, Partial<SourceSpecification>> = {};
     Object.entries(sources).forEach(([id, src]) => {
       initial[id] = { ...src };
@@ -50,6 +50,10 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
   // 保存
   const handleSave = () => {
     try {
+      if(!style || typeof style !== 'object') {
+        message.error('スタイルが正しく読み込まれていません');
+        return;
+      }
       const newSources: Record<string, SourceSpecification> = {};
       Object.entries(editSources).forEach(([id, src]) => {
         // type, url, attribution など必要な項目のみ
@@ -72,6 +76,10 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
 
   // ソース削除
   const handleDelete = (sourceId: string) => {
+    if(!style || typeof style !== 'object') {
+      message.error('スタイルが正しく読み込まれていません');
+      return;
+    }
     // 参照しているlayerを検索
     const layers = (style?.layers ?? []).filter(layer => {
       if ('source' in layer) { return layer.source === sourceId; }
@@ -94,7 +102,7 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
 
   // モーダルで「一緒に削除」選択時
   const handleDeleteWithLayers = () => {
-    if (!targetSourceId) return;
+    if (!targetSourceId || !style || typeof style !== 'object') { return; }
     // source削除
     const newSources = { ...sources };
     delete newSources[targetSourceId];

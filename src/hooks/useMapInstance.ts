@@ -1,14 +1,15 @@
 import { useEffect, useRef } from 'react';
 import maplibregl, { type StyleSpecification } from 'maplibre-gl';
 import { useAtom } from 'jotai';
-import { mapAtom } from '../atom';
+import { mapAtom, styleAtom } from '../atom';
 
 export function useMapInstance(
   containerRef: React.RefObject<HTMLDivElement | null>,
-  style?: StyleSpecification
+  style?: StyleSpecification | string
 ) {
   const [map, setMap] = useAtom(mapAtom);
-  const prevStyleRef = useRef<StyleSpecification | undefined>(undefined);
+  const [, setStyle] = useAtom(styleAtom);
+  const prevStyleRef = useRef<StyleSpecification | string | undefined>(undefined);
 
   useEffect(() => {
     if (!containerRef.current || !style) return;
@@ -24,13 +25,19 @@ export function useMapInstance(
     mapObj.on('load', () => {
       prevStyleRef.current = style;
       setMap(mapObj);
+
+      // styleがstring（URL）の場合、map.getStyle()で取得したスタイルをatomにセット
+      if (typeof style === 'string') {
+        const mapStyle = mapObj.getStyle();
+        console.log('Map style loaded:', mapStyle);
+        setStyle(mapStyle);
+      }
     });
-    
+
     return () => {
       mapObj?.remove();
     };
-    
-  }, [containerRef, setMap, style]);
+  }, [containerRef, setMap, setStyle, style]);
 
   useEffect(() => {
     if (map && style && prevStyleRef.current !== style) {

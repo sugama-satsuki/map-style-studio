@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Input, Button, Form, Space, message, Card } from 'antd';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
@@ -8,8 +8,8 @@ const BasicInfo: React.FC = () => {
 
     // フォーム初期値
     const [form] = Form.useForm();
-    React.useEffect(() => {
-        if (style) {
+    useEffect(() => {
+        if (style && typeof style === 'object') {
             form.setFieldsValue({
                 name: style.name ?? '',
                 center: style.center ? style.center.join(',') : '',
@@ -22,6 +22,10 @@ const BasicInfo: React.FC = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleSave = useCallback((values: any) => {
         try {
+            if(!style || typeof style !== 'object') {
+                message.error('スタイルが正しく読み込まれていません');
+                return;
+            }
             const newStyle = {
                 ...style!,
                 name: values.name,
