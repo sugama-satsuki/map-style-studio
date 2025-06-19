@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ColorPicker from '../../src/components/ColorPicker/ColorPicker';
+import ThemeColorChanger from '../../src/components/ThemeColorChanger/ThemeColorChanger';
 
-describe('ColorPicker', () => {
-  test('ColorPickerコンポーネントがレンダリングされる', () => {
-    render(<ColorPicker />);
+describe('ThemeColorChanger', () => {
+  test('ThemeColorChangerコンポーネントがレンダリングされる', () => {
+    render(<ThemeColorChanger />);
     // 例: テーマカラー設定用のUIが表示されるか確認
     // expect(screen.getByText('テーマカラー')).toBeInTheDocument();
   });
