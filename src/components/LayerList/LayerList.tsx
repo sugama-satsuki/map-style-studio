@@ -11,7 +11,7 @@ type LayerListProps = {
 
 const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
     const [style, setStyle] = useAtom(styleAtom);
-    const layers = useMemo(() => style?.layers ?? [], [style]);
+    const layers = useMemo(() => (typeof style !== 'string' && style?.layers) ? style?.layers : [], [style]);
     const grouped = groupLayersByType(layers);
 
     const layerGroups = useMemo(() => [
@@ -32,30 +32,44 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
 
     // 検索ワードでフィルタリング
     const filteredGroups = useMemo(() => (
-        search === '' ? 
-            layerGroups 
-        :
-            layerGroups.map(group => ({
+        search === ''
+            ? layerGroups
+            : layerGroups
+                .map(group => ({
                 ...group,
-                layers: group.layers?.filter(layer =>
-                    layer.id.toLowerCase().includes(search.toLowerCase())
-                ),
-            })).filter(group => (group.layers ?? []).length > 0)
+                layers: group.layers?.filter(layer => {
+                    const searchLower = search.toLowerCase();
+                    // レイヤーID
+                    if (layer.id.toLowerCase().includes(searchLower)) return true;
+                    // paint, filter, layout の中身も文字列化して検索
+                    const paintStr = layer.paint ? JSON.stringify(layer.paint).toLowerCase() : '';
+                    const filterStr = 'filter' in layer && layer.filter ? JSON.stringify(layer.filter).toLowerCase() : '';
+                    const layoutStr = layer.layout ? JSON.stringify(layer.layout).toLowerCase() : '';
+                    return (
+                    paintStr.includes(searchLower) ||
+                    filterStr.includes(searchLower) ||
+                    layoutStr.includes(searchLower)
+                    );
+                }),
+                }))
+                .filter(group => (group.layers ?? []).length > 0)
     ), [layerGroups, search]);
 
     // 編集開始
     const handleEdit = useCallback((layerId: string, field: 'filter' | 'paint' | 'layout') => {
+        if (typeof style === 'string') { return; }
         setEditing({ layerId, field, value: '' });
         savePrevStyle(style);
     }, []);
 
     // 編集保存
     const handleSave = useCallback((layerId: string, field: 'filter' | 'paint' | 'layout', value: string) => {
+        if (typeof style === 'string' || !editing) { return; }
         try {
             const newValue = value ? JSON.parse(value) : undefined;
             const newStyle = { 
                 ...style!, 
-                layers: layers.map(l =>
+                layers: layers.map((l) =>
                     l.id === layerId
                     ? {
                         ...l,
@@ -77,7 +91,8 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
 
     // リセット処理（filter/paint/layoutをundefinedにする）
     const handleResetStyle = useCallback((layerId: string, field: 'filter' | 'paint' | 'layout') => {
-        const newStyle = { ...style!, layers: layers.map(l =>
+        if( typeof style === 'string' ) { return; }
+        const newStyle = { ...style!, layers: layers.map((l) =>
             l.id === layerId
                 ? {
                     ...l,
@@ -94,7 +109,8 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
 
     // レイヤー削除処理
     const handleDeleteLayer = useCallback((layerId: string) => {
-        const newStyle = { ...style!, layers: layers.filter(l => l.id !== layerId) };
+        if (typeof style === 'string') { return; }
+        const newStyle = { ...style!, layers: layers.filter((l) => l.id !== layerId) };
         setStyle(newStyle);
         savePrevStyle(newStyle);
     }, [layers, style, setStyle, savePrevStyle]);
@@ -106,7 +122,7 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
         <Space direction="vertical" style={{ width: '100%', padding: 0 }} size='small'>
             <Input
                 size="large"
-                placeholder="レイヤー検索"
+                placeholder="レイヤー名、色、属性情報等で検索"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 allowClear
