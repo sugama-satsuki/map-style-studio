@@ -1,8 +1,9 @@
 import React from 'react';
 import { Card, Tabs } from 'antd';
-import ColorPicker from '../ColorPicker/ColorPicker';
+import ThemeColorChanger from '../ThemeColorChanger/ThemeColorChanger';
 import LayerList from '../LayerList/LayerList';
 import type { StyleSpecification } from 'maplibre-gl';
+import LayerSortList from '../LayerSortList/LayerSortList';
 
 interface Props {
   savePrevStyle: (newStyle: StyleSpecification | undefined) => void;
@@ -22,7 +23,12 @@ const LayerEditor: React.FC<Props> = ({ savePrevStyle }) => {
           {
             key: 'themeColor',
             label: 'テーマカラーで生成',
-            children: <ColorPicker savePrevStyle={savePrevStyle} />,
+            children: <ThemeColorChanger savePrevStyle={savePrevStyle} />,
+          },
+          {
+            key: 'layerSorting',
+            label: 'レイヤーの並び替え',
+            children: <LayerSortList savePrevStyle={savePrevStyle} />,
           }
         ]}
       />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Space, Typography, ColorPicker as AntdColorPicker, Flex, Button } from 'antd';
+import { Space, Typography, ColorPicker as AntdThemeColorChanger, Flex, Button } from 'antd';
 import { BgColorsOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import { generateStyleFromTheme } from '../../utils/generateStyleFromTheme';
 import { useAtom } from 'jotai';
@@ -11,7 +11,7 @@ type ColorProps = {
     savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void
 }
 
-const ColorPicker: React.FC<ColorProps> = ({ savePrevStyle }) => {
+const ThemeColorChanger: React.FC<ColorProps> = ({ savePrevStyle }) => {
     const [colors, setColors] = useState<string[]>(['#fff']);
     const [style, setStyle] = useAtom(styleAtom);
 
@@ -22,7 +22,7 @@ const ColorPicker: React.FC<ColorProps> = ({ savePrevStyle }) => {
     };
 
     const generateStyleByTheme = async () => {
-        if (!style) return;
+        if (!style || typeof style !== 'object') return;
         try {
             const newStyle = await generateStyleFromTheme(
                 { primary: colors[0], secondary: colors[1], tertiary: colors[2] },
@@ -43,7 +43,7 @@ const ColorPicker: React.FC<ColorProps> = ({ savePrevStyle }) => {
                     <Flex key={idx} align="center" justify={'space-between'} gap={8}>
                         <Flex key={idx} align="center" justify={'left'} gap={8}>
                             <Text>テーマカラー {idx + 1}</Text>
-                            <AntdColorPicker
+                            <AntdThemeColorChanger
                                 key={idx}
                                 value={color}
                                 onChange={(_, hex) => handleChange(idx, hex)}
@@ -79,4 +79,4 @@ const ColorPicker: React.FC<ColorProps> = ({ savePrevStyle }) => {
     );
 };
 
-export default ColorPicker;
+export default ThemeColorChanger;

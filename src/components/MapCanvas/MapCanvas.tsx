@@ -15,8 +15,8 @@ const MapCanvas: React.FC = () => {
 
   // 緯度経度・ズームの状態を保持
   const [viewState, setViewState] = useState<{ center: number[]; zoom: number }>({
-    center: style?.center ?? DEFAULT_CENTER,
-    zoom: style?.zoom ?? DEFAULT_ZOOM,
+    center: (typeof style !== 'object' ? DEFAULT_CENTER : style?.center) ?? DEFAULT_CENTER,
+    zoom: (typeof style !== 'object' ? DEFAULT_ZOOM : style?.zoom) ?? DEFAULT_ZOOM,
   });
 
   // mapインスタンスを生成

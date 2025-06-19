@@ -52,7 +52,7 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
 
     // 編集保存
     const handleSave = useCallback((layerId: string, field: 'filter' | 'paint' | 'layout', value: string) => {
-        if (typeof style === 'string' || !editing) { return; }
+        if (typeof style === 'string') { return; }
         try {
             const newValue = value ? JSON.parse(value) : undefined;
             const newStyle = { 
