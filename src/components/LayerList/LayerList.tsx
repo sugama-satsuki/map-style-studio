@@ -4,6 +4,7 @@ import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 import { groupLayersByType } from '../../utils/layerControl';
 import LayerGroupPanel from './LayerGroupPanel';
+import { isLayerMatched } from '../../utils/searchHelpers';
 
 type LayerListProps = {
     savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void
@@ -37,20 +38,7 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
             : layerGroups
                 .map(group => ({
                 ...group,
-                layers: group.layers?.filter(layer => {
-                    const searchLower = search.toLowerCase();
-                    // レイヤーID
-                    if (layer.id.toLowerCase().includes(searchLower)) return true;
-                    // paint, filter, layout の中身も文字列化して検索
-                    const paintStr = layer.paint ? JSON.stringify(layer.paint).toLowerCase() : '';
-                    const filterStr = 'filter' in layer && layer.filter ? JSON.stringify(layer.filter).toLowerCase() : '';
-                    const layoutStr = layer.layout ? JSON.stringify(layer.layout).toLowerCase() : '';
-                    return (
-                    paintStr.includes(searchLower) ||
-                    filterStr.includes(searchLower) ||
-                    layoutStr.includes(searchLower)
-                    );
-                }),
+                    layers: group.layers?.filter(layer => isLayerMatched(layer, search)),
                 }))
                 .filter(group => (group.layers ?? []).length > 0)
     ), [layerGroups, search]);
