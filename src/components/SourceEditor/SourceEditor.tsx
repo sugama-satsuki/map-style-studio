@@ -4,6 +4,7 @@ import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 import type { LayerSpecification, SourceSpecification } from 'maplibre-gl';
+import { fetchSourceLayersFromTileJson } from '../../utils/sourceHelper';
 
 type SourcesProps = {
   savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void;
@@ -25,7 +26,7 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [targetSourceId, setTargetSourceId] = useState<string | null>(null);
   const [referencedLayers, setReferencedLayers] = useState<LayerSpecification[]>([]);
-  const [editSources, setEditSources] = useState<Record<string, Partial<SourceSpecification & { url?: string, attribution?: string, tiles?: string[] }>>>( {});
+  const [editSources, setEditSources] = useState<Record<string, Partial<SourceSpecification & { url?: string, attribution?: string, tiles?: string[], sourceLayers?: string[] }>>>( {});
 
   // sourcesを取得
   const sources = useMemo(() => (typeof style === 'object' && style?.sources) ?? {}, [style]);
@@ -38,6 +39,26 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
     });
     setEditSources(initial);
   }, [sources]);
+
+  const handleFetchSourceLayers = async (sourceId: string, url?: string) => {
+    if (!url) return;
+    const layers = await fetchSourceLayersFromTileJson(url);
+    console.log(`Fetched source layers for ${sourceId}:`, layers);
+    setEditSources(prev => ({
+      ...prev,
+      [sourceId]: { ...prev[sourceId], sourceLayers: layers }
+    }));
+  };
+
+  // urlが変更されたらsourceLayersを取得
+  useEffect(() => {
+    Object.entries(editSources).forEach(([sourceId, src]) => {
+      if (src.type === 'vector' && src.url && !src.sourceLayers) {
+        handleFetchSourceLayers(sourceId, src.url as string);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editSources]);
 
   // 入力変更
   const handleChange = (sourceId: string, key: string, value: string | string[] | number | undefined) => {
@@ -200,6 +221,17 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     value={(source as any).maxzoom ?? ''}
                     onChange={e => handleChange(sourceId, 'maxzoom', e.target.value === '' ? undefined : Number(e.target.value))}
+                  />
+                  {/* sourceのsourceLayer一覧をリスト表示 */}
+                  <List
+                    size="small"
+                    bordered
+                    dataSource={source.sourceLayers}
+                    renderItem={layer => (
+                      <List.Item>
+                        <span>{layer}</span>
+                      </List.Item>
+                    )}
                   />
                 </Space>
               </Space>

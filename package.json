@@ -11,10 +11,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mapbox/vector-tile": "^2.0.4",
     "@testing-library/react": "^16.3.0",
     "antd": "^5.25.4",
     "jotai": "^2.12.5",
     "maplibre-gl": "^5.5.0",
+    "pbf": "^4.0.1",
     "playwright": "^1.52.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
