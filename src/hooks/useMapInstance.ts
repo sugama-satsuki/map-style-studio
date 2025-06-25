@@ -24,6 +24,7 @@ export function useMapInstance(
 
     mapObj.on('load', () => {
       prevStyleRef.current = style;
+      window.map = mapObj; // グローバル変数にmapオブジェクトをセット
       setMap(mapObj);
 
       // styleがstring（URL）の場合、map.getStyle()で取得したスタイルをatomにセット

@@ -5,7 +5,7 @@ import MapCanvas from '../MapCanvas/MapCanvas';
 import Sidebar from '../Sidebar/Sidebar';
 import { Header } from 'antd/es/layout/layout';
 import { useAtom } from 'jotai';
-import { styleAtom } from '../../atom';
+import { openExpressionCreatorAtom, styleAtom } from '../../atom';
 import FileImporter from '../FileImporter/FileImporter';
 import StyleJsonViewer from '../StyleJsonViewer/StyleJsonViewer';
 import { FileOutlined, UndoOutlined } from '@ant-design/icons';
@@ -15,6 +15,7 @@ import StyleUrlLoader from '../StyleUrlLoader/StyleUrlLoader';
 import BasicInfo from '../BasicInfo/BasicInfo';
 import LayerEditor from '../LayerEditor/LayerEditor';
 import SourceEditor from '../SourceEditor/SourceEditor';
+import ExpressionCreator from '../ExpressionCreator/ExpressionCreator';
 
 
 const { Sider, Content } = Layout;
@@ -24,8 +25,10 @@ const StyleEditor: React.FC = () => {
 
   // サイドバーの選択状態を管理
   const [selectedMenu, setSelectedMenu] = useState('layer');
-  const [style, setStyle] = useAtom(styleAtom);
   const prevStyleRef = React.useRef<typeof style | null>(null);
+
+  const [style, setStyle] = useAtom(styleAtom);
+  const [isExpressionCreatorOpen, setIsExpressionCreatorOpen] = useAtom(openExpressionCreatorAtom);
 
   // style編集前に前の状態を保存する関数
   const savePrevStyle = (newStyle: typeof style) => {
@@ -131,6 +134,7 @@ const StyleEditor: React.FC = () => {
           </Content>
         </Layout>
       </Layout>
+      <ExpressionCreator open={isExpressionCreatorOpen} onClose={() => setIsExpressionCreatorOpen(false)} />
     </Layout>
   );
 };

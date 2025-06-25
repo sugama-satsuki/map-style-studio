@@ -1,21 +1,29 @@
-import { Card, Space, Typography } from 'antd';
+import { Button, Card, Space, Tooltip, Typography } from 'antd';
 import React from 'react';
+import { RobotOutlined } from '@ant-design/icons';
+import './MapPopup.css';
+import { useSetAtom } from 'jotai';
+import { openExpressionCreatorAtom } from '../../atom';
 
 type Props = {
     lngLat: [number, number];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     properties: Record<string, any>[];
-    point?: { x: number; y: number }; // pointをオプショナルに
+    point?: { x: number; y: number };
     onClose: () => void;
 };
 
 const MapPopup: React.FC<Props> = ({ lngLat, properties, point, onClose }) => {
-    if (!point) return null;
 
     const { Text } = Typography;
+    
+    const setOpenExpressionCreator = useSetAtom(openExpressionCreatorAtom);
+
+    if (!point) { return null; }
 
     return (
         <Card
+            id='mapPopup'
             title={<strong>属性情報（{properties.length}件）</strong>}
             extra={
                 <a onClick={onClose} style={{ cursor: 'pointer' }}>
@@ -36,20 +44,29 @@ const MapPopup: React.FC<Props> = ({ lngLat, properties, point, onClose }) => {
                 <Text strong>位置:{lngLat[0].toFixed(5)}, {lngLat[1].toFixed(5)}</Text>
                 <div style={{ maxHeight: 200, overflowY: 'auto', marginTop: 4 }}>
                     {properties.map((props, idx) => (
-                        <pre
-                            key={idx}
-                            style={{
-                                whiteSpace: 'pre-wrap',
-                                wordBreak: 'break-all',
-                                margin: 0,
-                                background: '#f7f7f7',
-                                borderRadius: 4,
-                                padding: 8,
-                                marginBottom: 8,
-                            }}
-                        >
-                            {JSON.stringify(props, null, 2)}
-                        </pre>
+                        <div style={{ position: 'relative' }} key={idx}>
+                            <Tooltip title="Expression生成ツールを開く">
+                                <Button 
+                                    type="dashed" 
+                                    icon={<RobotOutlined />} 
+                                    className='showExpressionCreatorBtn'
+                                    onClick={() => setOpenExpressionCreator(true)}
+                                />
+                            </Tooltip>
+                            <pre
+                                style={{
+                                    whiteSpace: 'pre-wrap',
+                                    wordBreak: 'break-all',
+                                    margin: 0,
+                                    background: '#f7f7f7',
+                                    borderRadius: 4,
+                                    padding: 8,
+                                    marginBottom: 8,
+                                }}
+                            >
+                                {JSON.stringify(props, null, 2)}
+                            </pre>
+                        </div>
                     ))}
                 </div>
             </Space>
