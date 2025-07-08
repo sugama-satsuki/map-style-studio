@@ -9,7 +9,7 @@ type SourcesProps = {
   savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void;
 };
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const SOURCE_TYPES = [
   { label: 'vector', value: 'vector' },
@@ -41,10 +41,18 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
 
   // 入力変更
   const handleChange = (sourceId: string, key: string, value: string | string[] | number | undefined) => {
-    setEditSources(prev => ({
-      ...prev,
-      [sourceId]: { ...prev[sourceId], [key]: value }
-    }));
+    let newSources: Record<string, Partial<SourceSpecification>>;
+
+    // keyがsourceIdの場合はそのまま設定
+    if (key === 'sourceId' && value && typeof value === 'string' && value.trim() !== '') {
+      console.log(`sourceId変更: ${sourceId} -> ${value}`);
+      newSources = { ...editSources };
+      newSources[value] = { ...newSources[sourceId] };
+      delete newSources[sourceId];
+    } else {
+      newSources = { ...editSources, [sourceId]: { ...editSources[sourceId], [key]: value } };
+    }
+    setEditSources(newSources);
   };
 
   // 保存
@@ -72,6 +80,22 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
     } catch {
       message.error('保存に失敗しました');
     }
+  };
+
+  // ソース追加
+  const handleAddSource = () => {
+    if (!style || typeof style !== 'object') {
+      message.error('スタイルが正しく読み込まれていません');
+      return;
+    }
+    const newSourceId = `source-${Date.now()}`;
+    const newSource: Partial<SourceSpecification> = { type: 'geojson', attribution: '' };
+    setEditSources(prev => ({ ...prev, [newSourceId]: newSource }));
+    const newSources = { ...sources, [newSourceId]: newSource };
+    const newStyle = { ...style!, sources: newSources };
+    savePrevStyle(style);
+    setStyle(newStyle as maplibregl.StyleSpecification);
+    message.success(`"${newSourceId}" を追加しました`);
   };
 
   // ソース削除
@@ -133,7 +157,11 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
             return (
               <Space key={index} size="small" direction="vertical" style={{ width: '100%' }}>
                 <Flex justify='space-between' align='center' style={{ width: '100%' }}>
-                  <Title level={4} className='margin-none'>{sourceId}</Title>
+                  <Input
+                    value={sourceId}
+                    onChange={e => handleChange( sourceId, 'sourceId', e.target.value )}
+                    style={{ fontSize: 20, fontWeight: 'bold', width: 220, marginRight: 8 }}
+                  />
                   <Button
                     type="dashed"
                     shape="circle"
@@ -209,7 +237,7 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
           <Text type="secondary">sourcesが定義されていません</Text>
         )}
         <Button type='primary' onClick={handleSave}>保存</Button>
-        <Button type='default' icon={<PlusOutlined />} size='large'>ソースを追加</Button>
+        <Button type='default' icon={<PlusOutlined />} size='large' onClick={handleAddSource}>ソースを追加</Button>
       </Space>
       <Modal
         open={modalOpen}

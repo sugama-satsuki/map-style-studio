@@ -15,6 +15,7 @@ import StyleUrlLoader from '../StyleUrlLoader/StyleUrlLoader';
 import BasicInfo from '../BasicInfo/BasicInfo';
 import LayerEditor from '../LayerEditor/LayerEditor';
 import SourceEditor from '../SourceEditor/SourceEditor';
+import { useCreateEmptyStyle } from '../../hooks/useCreateEmptyStyle';
 
 
 const { Sider, Content } = Layout;
@@ -26,6 +27,7 @@ const StyleEditor: React.FC = () => {
   const [selectedMenu, setSelectedMenu] = useState('layer');
   const [style, setStyle] = useAtom(styleAtom);
   const prevStyleRef = React.useRef<typeof style | null>(null);
+  const { emptyStyle } = useCreateEmptyStyle();
 
   // style編集前に前の状態を保存する関数
   const savePrevStyle = (newStyle: typeof style) => {
@@ -54,6 +56,10 @@ const StyleEditor: React.FC = () => {
   const handleOpenSampleStyle = () => {
     setStyle(sampleStyle as unknown as StyleSpecification);
   };
+
+  const handleCreateEmptyStyle = () => {
+    setStyle(emptyStyle);
+  }
 
   // サイドバー内で表示するコンポーネントを切り替え
   let sidebarContent = null;
@@ -114,6 +120,15 @@ const StyleEditor: React.FC = () => {
                 gap={16}
                 style={{ textAlign: 'center', padding: '20px', height: '100%' }}
               >
+                <Button
+                  type="primary" 
+                  size='large'
+                  icon={<FileOutlined />}
+                  onClick={handleCreateEmptyStyle}
+                >
+                  styleを作成する
+                </Button>
+                <Text strong>OR</Text>
                 <Button
                   type="default" 
                   size='large'
