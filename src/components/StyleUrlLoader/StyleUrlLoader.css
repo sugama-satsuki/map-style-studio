@@ -1,0 +1,35 @@
+.style-url-loader-root {
+  width: 90%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.style-url-loader-input {
+  height: 40px;
+}
+
+.style-url-loader-history-dropdown {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.style-url-loader-history-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.style-url-loader-history-item.last {
+  border-bottom: none;
+}
