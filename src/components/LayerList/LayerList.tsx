@@ -106,6 +106,24 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
     // 編集キャンセル
     const handleCancel = useCallback(() => setEditing(null), []);
 
+    // 全レイヤー削除
+    const handleDeleteAllLayers = useCallback((groupType: string) => {
+        if (typeof style === 'string') { return; }
+
+        const newStyle = {
+            ...style!,
+            layers: layers.filter(l => 
+                groupType === 'other' ? 
+                    layerGroups.some(g => g.type === l.type && g.layers.includes(l)) === true
+                :
+                    l.type !== groupType
+            )
+        };
+
+        setStyle(newStyle);
+        savePrevStyle(newStyle);
+    }, [layers, style, setStyle, savePrevStyle]);
+
     return (
         <Space direction="vertical" style={{ width: '100%', padding: 0 }} size='small'>
             <Input
@@ -126,6 +144,7 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
                     onDeleteLayer={() => handleDeleteLayer(group.layers[0].id)}
                     onSave={handleSave}
                     onCancel={handleCancel}
+                    onDeleteAllLayers={() => handleDeleteAllLayers(group.type)}
                 />
             ))}
         </Space>
