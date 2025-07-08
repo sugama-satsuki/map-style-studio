@@ -1,48 +1,105 @@
-import React, { useState } from 'react';
-import { Input, Button, Space, message } from 'antd';
+import React, { useState, useRef } from 'react';
+import { Input, Button, Space, message, type InputRef } from 'antd';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
+import './StyleUrlLoader.css'; // CSSファイルをインポート
+
+const HISTORY_KEY = 'styleUrlHistory';
+
+const getHistory = (): string[] => {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  } catch {
+    return [];
+  }
+};
+const setHistory = (history: string[]) => {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+};
 
 const StyleUrlLoader: React.FC = () => {
-    const [url, setUrl] = useState('');
-    const [, setStyle] = useAtom(styleAtom);
-    const [loading, setLoading] = useState(false);
+  const [url, setUrl] = useState('');
+  const [, setStyle] = useAtom(styleAtom);
+  const [loading, setLoading] = useState(false);
+  const [history, setHistoryState] = useState<string[]>(getHistory());
+  const [historyVisible, setHistoryVisible] = useState(false);
+  const inputRef = useRef<InputRef>(null);
 
-    const handleLoad = async () => {
-        if (!url || url.trim() === '') {
-            message.warning('URLを入力してください');
-            return;
-        }
-        setLoading(true);
-        try {
-            setStyle(url);
-            message.success('style.jsonを読み込みました');
-        } catch {
-            message.error('style.jsonの読み込みに失敗しました');
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleLoad = async () => {
+    if (!url || url.trim() === '') {
+      message.warning('URLを入力してください');
+      return;
+    }
+    setLoading(true);
+    try {
+      setStyle(url);
+      const newHistory = [url, ...history.filter(u => u !== url)].slice(0, 10);
+      setHistory(newHistory);
+      setHistoryState(newHistory);
+      message.success('style.jsonを読み込みました');
+    } catch {
+      message.error('style.jsonの読み込みに失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <Space.Compact style={{ width: '90%', boxSizing: 'border-box' }}>
-            <Input
-                value={url}
-                onChange={e => setUrl(e.target.value)}
-                placeholder="URL指定でstyleを読み込む"
-                disabled={loading}
-                style={{ height: 40 }}
-            />
-            <Button
-                type="primary"
-                onClick={handleLoad}
-                loading={loading}
-                style={{ height: 40 }}
+  const handleHistoryClick = (historyUrl: string) => {
+    setUrl(historyUrl);
+    setHistoryVisible(false);
+    inputRef.current?.focus();
+  };
+
+  const handleInputFocus = () => {
+    if (history.length > 0) setHistoryVisible(true);
+  };
+
+  const handleInputBlur = () => {
+    setTimeout(() => setHistoryVisible(false), 150);
+  };
+
+  return (
+    <div className="style-url-loader-root">
+      <Space.Compact style={{ width: '100%' }}>
+        <Input
+          ref={inputRef}
+          value={url}
+          onChange={e => setUrl(e.target.value)}
+          placeholder="URL指定でstyleを読み込む"
+          disabled={loading}
+          className="style-url-loader-input"
+          style={{ height: 40 }}
+          onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
+          autoComplete="off"
+        />
+        <Button
+          type="primary"
+          onClick={handleLoad}
+          loading={loading}
+          style={{ height: 40 }}
+        >
+          読み込む
+        </Button>
+      </Space.Compact>
+      {historyVisible && history.length > 0 && (
+        <div className="style-url-loader-history-dropdown">
+          {history.map((h, i) => (
+            <div
+              key={h}
+              className={`style-url-loader-history-item${i === history.length - 1 ? ' last' : ''}`}
+              onMouseDown={e => {
+                e.preventDefault();
+                handleHistoryClick(h);
+              }}
             >
-                読み込む
-            </Button>
-        </Space.Compact>
-    );
+              {h}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default StyleUrlLoader;
