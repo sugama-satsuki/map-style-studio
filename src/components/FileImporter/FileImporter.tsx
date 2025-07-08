@@ -9,10 +9,11 @@ const { Text } = Typography;
 const { Dragger } = Upload;
 
 type Props = {
+  setLoadError: React.Dispatch<React.SetStateAction<boolean>>;
   onShowStyleEditor?: () => void;
 };
 
-const FileImporter: React.FC<Props> = () => {
+const FileImporter: React.FC<Props> = ({ setLoadError }) => {
   const setStyle = useSetAtom(styleAtom);
   const [spinning, setSpinning] = useState(false);
 
@@ -24,6 +25,7 @@ const FileImporter: React.FC<Props> = () => {
       const isJson = file.name.endsWith('.json');
       if (!isJson) {
         message.error('JSONファイルのみアップロードできます');
+        setLoadError(true);
       }
       return isJson || Upload.LIST_IGNORE;
     },
@@ -31,10 +33,17 @@ const FileImporter: React.FC<Props> = () => {
       setSpinning(true);
       const reader = new FileReader();
       reader.onload = (e) => {
-        const json = JSON.parse(e.target?.result as string);
-        setStyle(json);
-        if (onSuccess) { onSuccess("ok"); }
-        setSpinning(false);
+        try {
+          const json = JSON.parse(e.target?.result as string);
+          setStyle(json);
+          setLoadError(false);
+          if (onSuccess) { onSuccess("ok"); }
+        } catch {
+          message.error('style.jsonの読み込みに失敗しました');
+          setLoadError(true);
+        } finally {
+          setSpinning(false);
+        }
       };
       reader.readAsText(file as File);
     }
