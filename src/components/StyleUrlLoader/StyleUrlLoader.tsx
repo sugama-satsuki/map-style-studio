@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Input, Button, Space, message, type InputRef } from 'antd';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
-import './StyleUrlLoader.css'; // CSSファイルをインポート
+import './StyleUrlLoader.css';
 
 const HISTORY_KEY = 'styleUrlHistory';
 
@@ -17,7 +17,11 @@ const setHistory = (history: string[]) => {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
 };
 
-const StyleUrlLoader: React.FC = () => {
+type Props = {
+  setLoadError: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const StyleUrlLoader: React.FC<Props> = ({ setLoadError }) => {
   const [url, setUrl] = useState('');
   const [, setStyle] = useAtom(styleAtom);
   const [loading, setLoading] = useState(false);
@@ -26,20 +30,26 @@ const StyleUrlLoader: React.FC = () => {
   const inputRef = useRef<InputRef>(null);
 
   const handleLoad = async () => {
-    if (!url || url.trim() === '') {
+    if (!url || url.trim() === '' || !/\.json(\?.*)?$/i.test(url.trim())) {
       message.warning('URLを入力してください');
+      setUrl('');
+      setLoadError(true);
       return;
     }
     setLoading(true);
     try {
       setStyle(url);
+      setLoadError(false);
       const newHistory = [url, ...history.filter(u => u !== url)].slice(0, 10);
       setHistory(newHistory);
       setHistoryState(newHistory);
       message.success('style.jsonを読み込みました');
     } catch {
+      setUrl('');
+      setLoadError(true);
       message.error('style.jsonの読み込みに失敗しました');
     } finally {
+      setUrl('');
       setLoading(false);
     }
   };

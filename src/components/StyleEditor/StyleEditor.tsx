@@ -16,16 +16,17 @@ import BasicInfo from '../BasicInfo/BasicInfo';
 import LayerEditor from '../LayerEditor/LayerEditor';
 import SourceEditor from '../SourceEditor/SourceEditor';
 
-
 const { Sider, Content } = Layout;
 const { Title, Text } = Typography;
 
 const StyleEditor: React.FC = () => {
-
   // サイドバーの選択状態を管理
   const [selectedMenu, setSelectedMenu] = useState('layer');
   const [style, setStyle] = useAtom(styleAtom);
   const prevStyleRef = React.useRef<typeof style | null>(null);
+
+  // style.json読み込みエラー状態
+  const [loadError, setLoadError] = useState(false);
 
   // style編集前に前の状態を保存する関数
   const savePrevStyle = (newStyle: typeof style) => {
@@ -53,6 +54,7 @@ const StyleEditor: React.FC = () => {
 
   const handleOpenSampleStyle = () => {
     setStyle(sampleStyle as unknown as StyleSpecification);
+    setLoadError(false);
   };
 
   // サイドバー内で表示するコンポーネントを切り替え
@@ -114,6 +116,9 @@ const StyleEditor: React.FC = () => {
                 gap={16}
                 style={{ textAlign: 'center', padding: '20px', height: '100%' }}
               >
+                {loadError && (
+                  <Text type="danger" strong>スタイルの読み込みに失敗しました</Text>
+                )}
                 <Button
                   type="default" 
                   size='large'
@@ -123,9 +128,9 @@ const StyleEditor: React.FC = () => {
                   サンプルスタイルを開く
                 </Button>
                 <Text strong>OR</Text>
-                <StyleUrlLoader />
+                <StyleUrlLoader setLoadError={setLoadError} />
                 <Text strong>OR</Text>
-                <FileImporter />
+                <FileImporter setLoadError={setLoadError} />
               </Flex>
             }
           </Content>
