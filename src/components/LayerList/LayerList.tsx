@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { Input, Space } from 'antd';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Input, Space, Spin } from 'antd';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 import { groupLayersByType } from '../../utils/layerControl';
@@ -14,6 +14,8 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
     const [style, setStyle] = useAtom(styleAtom);
     const layers = useMemo(() => (typeof style !== 'string' && style?.layers) ? style?.layers : [], [style]);
     const grouped = groupLayersByType(layers);
+
+    const [loading, setLoading] = useState<'idle' | 'loading' | 'loaded'>('idle');
 
     const layerGroups = useMemo(() => [
         { type: 'circle', label: 'circle', layers: grouped.point },
@@ -37,7 +39,7 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
             ? layerGroups
             : layerGroups
                 .map(group => ({
-                ...group,
+                    ...group,
                     layers: group.layers?.filter(layer => isLayerMatched(layer, search)),
                 }))
                 .filter(group => (group.layers ?? []).length > 0)
@@ -124,30 +126,44 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
         savePrevStyle(newStyle);
     }, [layers, style, setStyle, savePrevStyle]);
 
+    // 読み込み開始
+    useEffect(() => {
+        if(style && loading === 'idle' && layers && layers.length === 0) { setLoading('loading'); }
+    }, [style, loading]);
+
+    // 読み込みをoffにする
+    useEffect(() => {
+        if (loading === 'loading' && layers && layers.length > 0) {
+            setLoading('loaded');
+        }
+    }, [layers, loading]);
+
     return (
-        <Space direction="vertical" style={{ width: '100%', padding: 0 }} size='small'>
-            <Input
-                size="large"
-                placeholder="レイヤー名、色、属性情報等で検索"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                allowClear
-            />
-            {filteredGroups.map(group => (
-                <LayerGroupPanel
-                    key={group.type}
-                    layerGroups={layerGroups}
-                    group={group}
-                    editing={editing}
-                    onEdit={handleEdit}
-                    onResetStyle={(field) => handleResetStyle(group.layers[0].id, field)}
-                    onDeleteLayer={() => handleDeleteLayer(group.layers[0].id)}
-                    onSave={handleSave}
-                    onCancel={handleCancel}
-                    onDeleteAllLayers={() => handleDeleteAllLayers(group.type)}
+        <Spin spinning={loading === 'loading'} tip="レイヤーを読み込み中..." style={{ width: '100%' }}>
+            <Space direction="vertical" style={{ width: '100%', padding: 0 }} size='small'>
+                <Input
+                    size="large"
+                    placeholder="レイヤー名、色、属性情報等で検索"
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    allowClear
                 />
-            ))}
-        </Space>
+                {filteredGroups.map(group => (
+                    <LayerGroupPanel
+                        key={group.type}
+                        layerGroups={layerGroups}
+                        group={group}
+                        editing={editing}
+                        onEdit={handleEdit}
+                        onResetStyle={(field) => handleResetStyle(group.layers[0].id, field)}
+                        onDeleteLayer={() => handleDeleteLayer(group.layers[0].id)}
+                        onSave={handleSave}
+                        onCancel={handleCancel}
+                        onDeleteAllLayers={() => handleDeleteAllLayers(group.type)}
+                    />
+                ))}
+            </Space>
+        </Spin>
     );
 };
 
