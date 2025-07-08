@@ -1,6 +1,6 @@
 import React from 'react';
 import { Collapse, Flex, Tooltip, Button, Typography, List } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import LayerListItem from './LayerListItem';
 import type { LayerSpecification } from 'maplibre-gl';
 
@@ -25,9 +25,10 @@ type Props = {
     onDeleteLayer: (layerId: string) => void;
     onSave: (layerId: string, field: 'filter' | 'paint' | 'layout', value: string) => void;
     onCancel: () => void;
+    onDeleteAllLayers: (groupType: string) => void;
 };
 
-const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit, onResetStyle, onDeleteLayer, onSave, onCancel }) => {
+const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit, onResetStyle, onDeleteLayer, onSave, onCancel, onDeleteAllLayers }) => {
 
     return (
 
@@ -38,6 +39,14 @@ const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit,
                         <Text strong>{group.label}</Text>
                         <Flex justify="right" align="center" gap={4}>
                             <Text strong>{`${group.layers ? group.layers.length : 0}件`}</Text>
+                            <Tooltip title="全レイヤー削除">
+                                <Button
+                                    danger
+                                    type="default"
+                                    icon={<DeleteOutlined />}
+                                    onClick={() => onDeleteAllLayers(group.type)}
+                                />
+                            </Tooltip>
                             <Tooltip title="レイヤーを追加">
                                 <Button type="primary" icon={<PlusOutlined />} />
                             </Tooltip>
