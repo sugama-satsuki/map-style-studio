@@ -45,6 +45,19 @@ const LayerListItem: React.FC<Props> = ({ layer, editing, onEdit, onResetStyle, 
         </Tooltip>
       </Flex>
     </Flex>
+    <span>
+      {'source' in layer && (
+        <>
+          <Text strong>source: </Text><Text code>{String(layer.source)}</Text>
+        </>
+      )}
+      {('source-layer' in layer) && (
+        <>
+          {' / '}
+          <Text strong>source-layer: </Text><Text code>{String(layer['source-layer'])}</Text>
+        </>
+      )}
+    </span>
     <LayerDetailAccordion
       layer={layer}
       editing={editing}
