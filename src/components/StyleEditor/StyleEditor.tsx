@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Flex, Layout, Typography } from 'antd';
+import { Button, Flex, Form, Layout, Typography } from 'antd';
 import './StyleEditor.css';
 import MapCanvas from '../MapCanvas/MapCanvas';
 import Sidebar from '../Sidebar/Sidebar';
@@ -15,6 +15,7 @@ import StyleUrlLoader from '../StyleUrlLoader/StyleUrlLoader';
 import BasicInfo from '../BasicInfo/BasicInfo';
 import LayerEditor from '../LayerEditor/LayerEditor';
 import SourceEditor from '../SourceEditor/SourceEditor';
+import AddLayerModal from '../AddLayerModal/AddLayerModal';
 
 const { Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -27,6 +28,45 @@ const StyleEditor: React.FC = () => {
 
   // style.json読み込みエラー状態
   const [loadError, setLoadError] = useState(false);
+
+  // 新規レイヤー追加用のstate
+  const [addLayerModalOpen, setAddLayerModalOpen] = useState(false);
+  const [addLayerGroupType, setAddLayerGroupType] = useState<string | null>(null);
+  const [addLayerForm] = Form.useForm();
+
+  // LayerListから呼び出す用
+  const handleAddLayer = (groupType: string) => {
+    setAddLayerGroupType(groupType);
+    setAddLayerModalOpen(true);
+    addLayerForm.resetFields();
+  };
+
+  // 新規レイヤー追加処理
+  const handleAddLayerOk = () => {
+    addLayerForm.validateFields().then(values => {
+      if (!style || typeof style === 'string') { return; }
+      const newLayer = {
+        id: values.id,
+        type: addLayerGroupType,
+        source: values.source,
+        'source-layer': values.sourceLayer,
+        layout: {},
+        paint: {},
+      };
+      const newStyle = {
+        ...style,
+        layers: [...(style?.layers ?? []), newLayer]
+      };
+      setStyle(newStyle as StyleSpecification);
+      // 必要ならsavePrevStyle(newStyle);
+      setAddLayerModalOpen(false);
+      // message.success('レイヤーを追加しました');
+    });
+  };
+
+  const handleAddLayerCancel = () => {
+    setAddLayerModalOpen(false);
+  };
 
   // style編集前に前の状態を保存する関数
   const savePrevStyle = (newStyle: typeof style) => {
@@ -64,7 +104,7 @@ const StyleEditor: React.FC = () => {
   } else if (selectedMenu === 'sources') {
     sidebarContent = <SourceEditor savePrevStyle={savePrevStyle} />;
   } else if (selectedMenu === 'layer') {
-    sidebarContent = <LayerEditor savePrevStyle={savePrevStyle} />;
+    sidebarContent = <LayerEditor savePrevStyle={savePrevStyle} addLayer={handleAddLayer} />;
   } else if (selectedMenu === 'style-viewer') {
     sidebarContent = <StyleJsonViewer savePrevStyle={savePrevStyle} />;
   }
@@ -136,6 +176,12 @@ const StyleEditor: React.FC = () => {
           </Content>
         </Layout>
       </Layout>
+      <AddLayerModal
+        open={addLayerModalOpen}
+        onOk={handleAddLayerOk}
+        onCancel={handleAddLayerCancel}
+        form={addLayerForm}
+      />
     </Layout>
   );
 };

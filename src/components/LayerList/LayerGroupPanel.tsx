@@ -26,9 +26,10 @@ type Props = {
     onSave: (layerId: string, field: 'filter' | 'paint' | 'layout', value: string) => void;
     onCancel: () => void;
     onDeleteAllLayers: (groupType: string) => void;
+    onAddLayer: (groupType: string) => void;
 };
 
-const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit, onResetStyle, onDeleteLayer, onSave, onCancel, onDeleteAllLayers }) => {
+const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit, onResetStyle, onDeleteLayer, onSave, onCancel, onDeleteAllLayers, onAddLayer }) => {
 
     return (
 
@@ -48,7 +49,11 @@ const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit,
                                 />
                             </Tooltip>
                             <Tooltip title="レイヤーを追加">
-                                <Button type="primary" icon={<PlusOutlined />} />
+                                <Button 
+                                    type="primary" 
+                                    icon={<PlusOutlined />} 
+                                    onClick={() => onAddLayer(group.type)}
+                                />
                             </Tooltip>
                         </Flex>
                     </Flex>
