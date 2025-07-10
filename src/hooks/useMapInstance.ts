@@ -12,7 +12,7 @@ export function useMapInstance(
   const prevStyleRef = useRef<StyleSpecification | string | undefined>(undefined);
 
   useEffect(() => {
-    if (!containerRef.current || !style) return;
+    if (!containerRef.current || !style || map) return;
 
     const mapObj = new maplibregl.Map({
       container: containerRef.current,
@@ -40,6 +40,7 @@ export function useMapInstance(
   }, [containerRef, setMap, setStyle, style]);
 
   useEffect(() => {
+    console.log('useMapInstance style changed:', style);
     if (map && style && prevStyleRef.current !== style) {
       map.once('styledata', () => {
         prevStyleRef.current = style;
