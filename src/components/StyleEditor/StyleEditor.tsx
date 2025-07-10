@@ -50,8 +50,9 @@ const StyleEditor: React.FC = () => {
         type: addLayerGroupType,
         source: values.source,
         'source-layer': values.sourceLayer,
-        layout: {},
-        paint: {},
+        layout: values.layout ? JSON.parse(values.layout) : undefined,
+        filter: values.filter ? JSON.parse(values.filter) : undefined,
+        paint: values.paint ? JSON.parse(values.paint) : undefined,
       };
       const newStyle = {
         ...style,
