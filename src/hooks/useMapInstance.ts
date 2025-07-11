@@ -29,7 +29,6 @@ export function useMapInstance(
       // styleがstring（URL）の場合、map.getStyle()で取得したスタイルをatomにセット
       if (typeof style === 'string') {
         const mapStyle = mapObj.getStyle();
-        console.log('Map style loaded:', mapStyle);
         setStyle(mapStyle);
       }
     });
@@ -40,13 +39,11 @@ export function useMapInstance(
   }, [containerRef, setMap, setStyle, style]);
 
   useEffect(() => {
-    console.log('Map Object:', map);
     if (map && style && prevStyleRef.current !== style) {
       map.once('styledata', () => {
         prevStyleRef.current = style;
       });
       map.setStyle(style);
-      console.log('useMapInstance style changed:', style, map, style, prevStyleRef.current !== style);
     }
   }, [map, style]);
 
