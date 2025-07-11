@@ -7,9 +7,10 @@ import LayerSortList from '../LayerSortList/LayerSortList';
 
 interface Props {
   savePrevStyle: (newStyle: StyleSpecification | undefined) => void;
+  addLayer: (groupType: string) => void;
 }
 
-const LayerEditor: React.FC<Props> = ({ savePrevStyle }) => {
+const LayerEditor: React.FC<Props> = ({ savePrevStyle, addLayer }) => {
   return (
     <Card className='editor-card' id='layer-editor' size='small'>
       <Tabs
@@ -18,7 +19,7 @@ const LayerEditor: React.FC<Props> = ({ savePrevStyle }) => {
           {
             key: 'layer',
             label: 'レイヤー編集',
-            children: <LayerList savePrevStyle={savePrevStyle} />
+            children: <LayerList savePrevStyle={savePrevStyle} addLayer={addLayer} />
           },
           {
             key: 'themeColor',

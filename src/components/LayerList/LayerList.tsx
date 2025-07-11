@@ -7,10 +7,11 @@ import LayerGroupPanel from './LayerGroupPanel';
 import { isLayerMatched } from '../../utils/searchHelpers';
 
 type LayerListProps = {
-    savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void
+    savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void;
+  addLayer: (groupType: string) => void;
 }
 
-const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
+const LayerList: React.FC<LayerListProps> = ({ savePrevStyle, addLayer }) => {
     const [style, setStyle] = useAtom(styleAtom);
     const layers = useMemo(() => (typeof style !== 'string' && style?.layers) ? style?.layers : [], [style]);
     const grouped = groupLayersByType(layers);
@@ -126,6 +127,7 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
         savePrevStyle(newStyle);
     }, [layers, style, setStyle, savePrevStyle]);
 
+
     // 読み込み開始
     useEffect(() => {
         if(style && loading === 'idle' && layers && layers.length === 0) { setLoading('loading'); }
@@ -160,6 +162,7 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle }) => {
                         onSave={handleSave}
                         onCancel={handleCancel}
                         onDeleteAllLayers={() => handleDeleteAllLayers(group.type)}
+                        onAddLayer={() => addLayer(group.type)}   
                     />
                 ))}
             </Space>
