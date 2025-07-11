@@ -76,12 +76,24 @@ const StyleEditor: React.FC = () => {
 
   // style.jsonダウンロード処理
   const handleDownloadStyleJson = () => {
-    if (!style) return;
+    if (!style) { return; }
+    // 日付をMMDD形式で取得
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const defaultFileName = `style_${yyyy}${mm}${dd}.json`;
+
+    // ファイル名をユーザーに入力させる
+    const fileName = window.prompt('保存するファイル名を入力してください', defaultFileName);
+
+    if (!fileName) { return; }
+
     const blob = new Blob([JSON.stringify(style, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'style.json';
+    a.download = fileName;
     a.click();
     URL.revokeObjectURL(url);
   };
