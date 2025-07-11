@@ -158,7 +158,7 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle, addLayer }) => {
                         editing={editing}
                         onEdit={handleEdit}
                         onResetStyle={(field) => handleResetStyle(group.layers[0].id, field)}
-                        onDeleteLayer={() => handleDeleteLayer(group.layers[0].id)}
+                        onDeleteLayer={handleDeleteLayer}
                         onSave={handleSave}
                         onCancel={handleCancel}
                         onDeleteAllLayers={() => handleDeleteAllLayers(group.type)}
