@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Card, message, Space, Tooltip } from 'antd';
+import { Button, Card, Input, message, Space, Tooltip } from 'antd';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -73,14 +73,12 @@ const StyleJsonViewer: React.FC<StyleJsonViewerProps> = ({ savePrevStyle }) => {
       }</Space>
       <div style={{ width: '100%', maxHeight: 'calc(100% - 40px)', overflowY: 'scroll' }}>
         {editing ? (
-          <textarea
+          <Input.TextArea
             value={code}
             onChange={e => setCode(e.target.value)}
+            autoSize={{ minRows: 20 }}
             style={{
               width: '100%',
-              minHeight: '650px',
-              height: '100%',
-              fontFamily: 'monospace',
               fontSize: 14,
               background: '#1e1e1e',
               color: '#fff',
