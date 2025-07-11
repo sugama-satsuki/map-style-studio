@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Button, message } from 'antd';
+import { Button, Card, Input, message, Space, Tooltip } from 'antd';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { CheckOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons';
 
 type StyleJsonViewerProps = {
     savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void
@@ -38,47 +39,59 @@ const StyleJsonViewer: React.FC<StyleJsonViewerProps> = ({ savePrevStyle }) => {
   };
 
   return (
-    <div
-      style={{ width: '100%', height: '100%', padding: 0 }}
-    >
-      <div>{
+    <Card className='editor-card' id='layer-editor' size='small'>
+      <Space style={{ width: '100%', height: '40px' }} direction="horizontal" align="center">{
         editing ? (
           <>
-            <Button type="primary" size="small" onClick={handleSave} style={{ marginRight: 8 }}>
-              保存
-            </Button>
-            <Button size="small" onClick={handleCancel}>
-              キャンセル
-            </Button>
+            <Tooltip title="保存">
+              <Button
+                type="primary"
+                shape="circle"
+                icon={<CheckOutlined />}
+                onClick={handleSave}
+              />
+            </Tooltip>
+            <Tooltip title="キャンセル">
+              <Button
+                type="default"
+                shape="circle"
+                icon={<CloseOutlined />}
+                onClick={handleCancel}
+              />
+            </Tooltip>
           </>
         ) : (
-          <Button size="small" onClick={handleEdit}>
-            編集
-          </Button>
+          <Tooltip title="編集">
+            <Button
+              type="default"
+              shape="circle"
+              icon={<EditOutlined />}
+              onClick={handleEdit}
+            />
+          </Tooltip>
         )
-      }</div>
-      {editing ? (
-        <textarea
-          value={code}
-          onChange={e => setCode(e.target.value)}
-          style={{
-            width: '100%',
-            minHeight: '650px',
-            height: '100%',
-            fontFamily: 'monospace',
-            fontSize: 14,
-            background: '#1e1e1e',
-            color: '#fff',
-            border: 'none',
-            resize: 'vertical',
-          }}
-        />
-      ) : (
-        <SyntaxHighlighter language="json" style={vscDarkPlus} customStyle={{ margin: 0, background: '#1e1e1e', height: '100%', width: '100%', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-          {JSON.stringify(style, null, 2)}
-        </SyntaxHighlighter>
-      )}
-    </div>
+      }</Space>
+      <div style={{ width: '100%', maxHeight: 'calc(100% - 40px)', overflowY: 'scroll' }}>
+        {editing ? (
+          <Input.TextArea
+            value={code}
+            onChange={e => setCode(e.target.value)}
+            autoSize={{ minRows: 20 }}
+            style={{
+              width: '100%',
+              fontSize: 14,
+              background: '#1e1e1e',
+              color: '#fff',
+              border: 'none',
+            }}
+          />
+        ) : (
+          <SyntaxHighlighter language="json" style={vscDarkPlus}>
+            {JSON.stringify(style, null, 2)}
+          </SyntaxHighlighter>
+        )}
+      </div>
+    </Card>
   );
 };
 

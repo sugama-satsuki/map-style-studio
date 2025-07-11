@@ -22,6 +22,11 @@ body, #root {
   width: 505px;
   background-color: #f9f8f8;
   height: 100%;
+  display: block;
+}
+.editor-card .ant-card-body {
+  display: block;
+  height: 100%;
 }
 
 #layer-editor .ant-tabs-nav {

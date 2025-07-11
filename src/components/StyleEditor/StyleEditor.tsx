@@ -118,7 +118,7 @@ const StyleEditor: React.FC = () => {
     sidebarContent = <SourceEditor savePrevStyle={savePrevStyle} />;
   } else if (selectedMenu === 'layer') {
     sidebarContent = <LayerEditor savePrevStyle={savePrevStyle} addLayer={handleAddLayer} />;
-  } else if (selectedMenu === 'style-viewer') {
+  } else if (selectedMenu === 'style') {
     sidebarContent = <StyleJsonViewer savePrevStyle={savePrevStyle} />;
   }
 
