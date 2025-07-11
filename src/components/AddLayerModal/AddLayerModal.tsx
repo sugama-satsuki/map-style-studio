@@ -1,5 +1,6 @@
 import React from 'react';
-import { Modal, Form, Input, type FormInstance } from 'antd';
+import { Modal, Form, Input, Select, type FormInstance } from 'antd';
+import type { LayerSpecification } from 'maplibre-gl';
 
 type AddLayerModalProps = {
   open: boolean;
@@ -7,9 +8,16 @@ type AddLayerModalProps = {
   form: FormInstance<any>;
   onOk: () => void;
   onCancel: () => void;
+  layers: LayerSpecification[];
 };
 
-const AddLayerModal: React.FC<AddLayerModalProps> = ({ open, form, onOk, onCancel }) => (
+const AddLayerModal: React.FC<AddLayerModalProps> = ({
+  open,
+  form,
+  onOk,
+  onCancel,
+  layers,
+}) => (
   <Modal
     open={open}
     title="新規レイヤーを追加"
@@ -19,6 +27,38 @@ const AddLayerModal: React.FC<AddLayerModalProps> = ({ open, form, onOk, onCance
     cancelText="キャンセル"
   >
     <Form form={form} layout="vertical">
+      <Form.Item
+        label="既存レイヤーからコピー"
+        name="copyLayerId"
+        tooltip="既存レイヤーを選択すると、その内容をコピーして編集できます"
+      >
+        <Select
+          allowClear
+          placeholder="コピー元レイヤーを選択"
+          onChange={layerId => {
+            const layer = layers.find(l => l.id === layerId);
+            if (layer) {
+              console.log('コピーするレイヤー:', (layer as { 'source-layer': string })['source-layer']);
+              // コピー内容をフォームにセット
+              form.setFieldsValue({
+                id: `${layer.id}_copy`,
+                source: 'source' in layer ? (layer as { source: string }).source : '',
+                sourceLayer: (layer as { 'source-layer': string })['source-layer'] ?? '',
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                filter: 'filter' in layer && (layer as any).filter ? JSON.stringify((layer as any).filter, null, 2) : '',
+                paint: layer.paint ? JSON.stringify(layer.paint, null, 2) : '',
+                layout: layer.layout ? JSON.stringify(layer.layout, null, 2) : '',
+              });
+            }
+          }}
+        >
+          {layers.map(layer => (
+            <Select.Option key={layer.id} value={layer.id}>
+              {layer.id}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
       <Form.Item
         label="レイヤーID"
         name="id"
