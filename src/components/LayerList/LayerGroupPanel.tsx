@@ -4,7 +4,6 @@ import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import LayerListItem from './LayerListItem';
 import type { LayerSpecification } from 'maplibre-gl';
 
-const { Panel } = Collapse;
 const { Text } = Typography;
 
 type Props = {
@@ -29,59 +28,75 @@ type Props = {
     onAddLayer: (groupType: string) => void;
 };
 
-const LayerGroupPanel: React.FC<Props> = ({ layerGroups, group, editing, onEdit, onResetStyle, onDeleteLayer, onSave, onCancel, onDeleteAllLayers, onAddLayer }) => {
+const LayerGroupPanel: React.FC<Props> = ({
+  layerGroups,
+  group,
+  editing,
+  onEdit,
+  onResetStyle,
+  onDeleteLayer,
+  onSave,
+  onCancel,
+  onDeleteAllLayers,
+  onAddLayer
+}) => {
+  const items = [
+    {
+      key: group.type,
+      label: (
+        <Flex justify="space-between" align="center" gap={4}>
+          <Text strong>{group.label}</Text>
+          <Flex justify="right" align="center" gap={4}>
+            <Text strong>{`${group.layers ? group.layers.length : 0}件`}</Text>
+            <Tooltip title="全レイヤー削除">
+              <Button
+                danger
+                type="default"
+                icon={<DeleteOutlined />}
+                onClick={() => onDeleteAllLayers(group.type)}
+              />
+            </Tooltip>
+            <Tooltip title="レイヤーを追加">
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => onAddLayer(group.type)}
+              />
+            </Tooltip>
+          </Flex>
+        </Flex>
+      ),
+      children: (
+        <List
+          style={{ width: '100%', padding: 0 }}
+          size="small"
+          dataSource={group.layers}
+          renderItem={item => (
+            <List.Item style={{ width: '100%', padding: 0 }}>
+              <LayerListItem
+                layer={item}
+                editing={editing}
+                onEdit={field => onEdit(item.id, field)}
+                onResetStyle={field => onResetStyle(field)}
+                onDeleteLayer={() => onDeleteLayer(item.id)}
+                onSave={(field, value) => onSave(item.id, field, value)}
+                onCancel={onCancel}
+              />
+            </List.Item>
+          )}
+          locale={{ emptyText: null }}
+        />
+      )
+    }
+  ];
 
-    return (
-
-        <Collapse defaultActiveKey={layerGroups.map(g => g.type)} style={{ width: '100%', padding: 0 }}>
-            <Panel
-                header={
-                    <Flex justify="space-between" align="center" gap={4}>
-                        <Text strong>{group.label}</Text>
-                        <Flex justify="right" align="center" gap={4}>
-                            <Text strong>{`${group.layers ? group.layers.length : 0}件`}</Text>
-                            <Tooltip title="全レイヤー削除">
-                                <Button
-                                    danger
-                                    type="default"
-                                    icon={<DeleteOutlined />}
-                                    onClick={() => onDeleteAllLayers(group.type)}
-                                />
-                            </Tooltip>
-                            <Tooltip title="レイヤーを追加">
-                                <Button 
-                                    type="primary" 
-                                    icon={<PlusOutlined />} 
-                                    onClick={() => onAddLayer(group.type)}
-                                />
-                            </Tooltip>
-                        </Flex>
-                    </Flex>
-                }
-                key={group.type}
-            >
-                <List
-                    style={{ width: '100%', padding: 0 }}
-                    size="small"
-                    dataSource={group.layers}
-                    renderItem={item => (
-                        <List.Item style={{ width: '100%', padding: 0 }}>
-                            <LayerListItem
-                                layer={item}
-                                editing={editing}
-                                onEdit={field => onEdit(item.id, field)}
-                                onResetStyle={field => onResetStyle(field)}
-                                onDeleteLayer={() => onDeleteLayer(item.id)}
-                                onSave={(field, value) => onSave(item.id, field, value)}
-                                onCancel={onCancel}
-                            />
-                        </List.Item>
-                    )}
-                    locale={{ emptyText: null }}
-                />
-            </Panel>
-        </Collapse>
-    );
+  return (
+    <Collapse
+      defaultActiveKey={layerGroups.map(g => g.type)}
+      style={{ width: '100%', padding: 0 }}
+      items={items}
+    />
+  );
 };
 
 export default LayerGroupPanel;
