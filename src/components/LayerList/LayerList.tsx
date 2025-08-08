@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Input, Space, Spin } from 'antd';
-import { useAtom } from 'jotai';
-import { styleAtom } from '../../atom';
+import { useAtom, useAtomValue } from 'jotai';
+import { mapAtom, styleAtom } from '../../atom';
 import { groupLayersByType } from '../../utils/layerControl';
 import LayerGroupPanel from './LayerGroupPanel';
 import { isLayerMatched } from '../../utils/searchHelpers';
@@ -13,6 +13,7 @@ type LayerListProps = {
 
 const LayerList: React.FC<LayerListProps> = ({ savePrevStyle, addLayer }) => {
     const [style, setStyle] = useAtom(styleAtom);
+    const map = useAtomValue(mapAtom);
     const layers = useMemo(() => (typeof style !== 'string' && style?.layers) ? style?.layers : [], [style]);
     const grouped = groupLayersByType(layers);
 
@@ -58,8 +59,14 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle, addLayer }) => {
         if (typeof style === 'string') { return; }
         try {
             const newValue = value ? JSON.parse(value) : undefined;
-            const newStyle = { 
-                ...style!, 
+            const nowLngLat = map?.getCenter()
+                ? [map.getCenter().lng, map.getCenter().lat]
+                : style?.center;
+            const nowZoom = map?.getZoom() ?? style?.zoom;
+            const newStyle = {
+                ...style!,
+                center: nowLngLat,
+                zoom: nowZoom,
                 layers: layers.map((l) =>
                     l.id === layerId
                     ? {
@@ -72,13 +79,13 @@ const LayerList: React.FC<LayerListProps> = ({ savePrevStyle, addLayer }) => {
                     : l
                 )
             };
-            setStyle(newStyle);
-            savePrevStyle(newStyle);
+            setStyle(newStyle as maplibregl.StyleSpecification);
+            savePrevStyle(newStyle as maplibregl.StyleSpecification);
             setEditing(null);
         } catch {
             // エラー処理
         }
-    }, [layers, style, setStyle, savePrevStyle]);
+    }, [layers, style, map, setStyle, savePrevStyle]);
 
     // リセット処理（filter/paint/layoutをundefinedにする）
     const handleResetStyle = useCallback((layerId: string, field: 'filter' | 'paint' | 'layout') => {
