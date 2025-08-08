@@ -49,6 +49,7 @@ export function useMapInstance(
       }
     }
     
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerRef, setMap, setStyle, style]);
 
   return map;
