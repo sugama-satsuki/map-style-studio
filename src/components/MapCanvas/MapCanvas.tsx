@@ -16,8 +16,8 @@ const MapCanvas: React.FC = () => {
   const { popupInfo, setPopupInfo } = useMapPopup(map);
 
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      <div data-testid="map-container" style={{ width: '100%', height: '100%' }} ref={containerRef} />
+    <div style={{ position: 'relative' }} className="full-all">
+      <div data-testid="map-container" className="full-all" ref={containerRef} />
       {popupInfo && (
         <MapPopup
           lngLat={popupInfo.lngLat}
