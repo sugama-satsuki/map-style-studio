@@ -23,6 +23,29 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onReset
   const jsonStr = JSON.stringify((layer as any)['paint'], null, 2) || '';
   const colorful = useColorfulJson(jsonStr);
 
+  const handleSave = (e: React.MouseEvent<HTMLElement>, field: 'filter' | 'paint' | 'layout', localValue: string) => {
+    e.stopPropagation();
+    onSave(field, localValue);
+  };
+
+  const handleCancel = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    onCancel();
+  };
+
+  const handleEdit = (e: React.MouseEvent<HTMLElement>, field: 'filter' | 'paint' | 'layout') => {
+    e.stopPropagation();
+    onEdit(field);
+  };
+
+  const handleReset = (e: React.MouseEvent<HTMLElement>, field: 'filter' | 'paint' | 'layout') => {
+    e.stopPropagation();
+    onResetStyle(field);
+  };
+
+
+  /* --- useEffect --- */
+
   useEffect(() => {
     setLocalEditing(editing);
   }, [editing]);
@@ -35,7 +58,9 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onReset
     // eslint-disable-next-line
   }, [localEditing?.layerId, localEditing?.field]);
 
-  // items配列でPanelを定義
+  /* --- useEffect --- */
+
+
   const items = (['filter', 'paint', 'layout'] as const).map(field => ({
     key: field,
     label: (
@@ -49,7 +74,7 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onReset
                   type="primary"
                   shape="circle"
                   icon={<CheckOutlined />}
-                  onClick={() => onSave(field, localValue)}
+                  onClick={(e) => handleSave(e, field, localValue)}
                 />
               </Tooltip>
               <Tooltip title="キャンセル">
@@ -57,7 +82,7 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onReset
                   type="default"
                   shape="circle"
                   icon={<CloseOutlined />}
-                  onClick={onCancel}
+                  onClick={handleCancel}
                 />
               </Tooltip>
             </>
@@ -67,7 +92,7 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onReset
                 type="default"
                 shape="circle"
                 icon={<EditOutlined />}
-                onClick={() => onEdit(field)}
+                onClick={(e) => handleEdit(e, field)}
               />
             </Tooltip>
           )}
@@ -76,7 +101,7 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onReset
               type="default"
               shape="circle"
               icon={<ReloadOutlined />}
-              onClick={() => onResetStyle(field)}
+              onClick={(e) => handleReset(e, field)}
             />
           </Tooltip>
         </Flex>
