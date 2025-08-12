@@ -14,7 +14,7 @@ const LayerEditor: React.FC<Props> = ({ savePrevStyle, addLayer }) => {
   return (
     <Card className='editor-card' id='layer-editor' size='small'>
       <Tabs
-        defaultActiveKey="layer"
+        defaultActiveKey="themeColor"
         items={[
           {
             key: 'themeColor',
@@ -23,7 +23,7 @@ const LayerEditor: React.FC<Props> = ({ savePrevStyle, addLayer }) => {
           },
           {
             key: 'layer',
-            label: 'レイヤー編集',
+            label: 'レイヤー単位で編集',
             children: <LayerList savePrevStyle={savePrevStyle} addLayer={addLayer} />
           },
           {
