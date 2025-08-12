@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { styleAtom } from '../../atom';
 import useMapInstance from '../../hooks/useMapInstance';
@@ -15,9 +15,13 @@ const MapCanvas: React.FC = () => {
 
   const { popupInfo, setPopupInfo } = useMapPopup(map);
 
+  useEffect(() => {
+    console.log('Map style set:', style, map, containerRef.current);
+  }, [map, style]);
+
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      <div data-testid="map-container" style={{ width: '100%', height: '100%' }} ref={containerRef} />
+    <div style={{ position: 'relative' }} className="full-all">
+      <div data-testid="map-container" className="full-all" ref={containerRef} />
       {popupInfo && (
         <MapPopup
           lngLat={popupInfo.lngLat}
