@@ -18,6 +18,7 @@ type Props = {
 const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onResetStyle, onSave, onCancel }) => {
   const [localValue, setLocalValue] = useState<string>('');
   const [localEditing, setLocalEditing] = useState<{ layerId: string; field: 'filter' | 'paint' | 'layout' | null } | null>(null);
+  const [activeKey, setActiveKey] = useState<string[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const jsonStr = JSON.stringify((layer as any)['paint'], null, 2) || '';
@@ -36,6 +37,7 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onReset
   const handleEdit = (e: React.MouseEvent<HTMLElement>, field: 'filter' | 'paint' | 'layout') => {
     e.stopPropagation();
     onEdit(field);
+    setActiveKey(prev => prev.includes(field) ? prev : [...prev, field]);
   };
 
   const handleReset = (e: React.MouseEvent<HTMLElement>, field: 'filter' | 'paint' | 'layout') => {
@@ -129,7 +131,14 @@ const LayerDetailAccordion: React.FC<Props> = ({ layer, editing, onEdit, onReset
   }));
 
   return (
-    <Collapse ghost size="small" style={{ width: '100%', padding: 0 }} items={items} />
+    <Collapse 
+      ghost 
+      size="small" 
+      style={{ width: '100%', padding: 0 }} 
+      items={items} 
+      activeKey={activeKey}
+      onChange={keys => setActiveKey(Array.isArray(keys) ? keys : [keys])}
+    />
   );
 };
 
