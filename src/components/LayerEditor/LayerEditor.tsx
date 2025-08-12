@@ -17,14 +17,14 @@ const LayerEditor: React.FC<Props> = ({ savePrevStyle, addLayer }) => {
         defaultActiveKey="layer"
         items={[
           {
-            key: 'layer',
-            label: 'レイヤー編集',
-            children: <LayerList savePrevStyle={savePrevStyle} addLayer={addLayer} />
-          },
-          {
             key: 'themeColor',
             label: 'テーマカラーで生成',
             children: <ThemeColorChanger savePrevStyle={savePrevStyle} />,
+          },
+          {
+            key: 'layer',
+            label: 'レイヤー編集',
+            children: <LayerList savePrevStyle={savePrevStyle} addLayer={addLayer} />
           },
           {
             key: 'layerSorting',
