@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Space, Typography, ColorPicker as AntdThemeColorChanger, Flex, Button, Tabs } from 'antd';
+import { Space, Typography, ColorPicker as AntdColorChanger, Flex, Button, Tabs } from 'antd';
 import { BgColorsOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import { generateStyleFromTheme } from '../../utils/generateStyleFromTheme';
 import { useAtom } from 'jotai';
@@ -12,7 +12,7 @@ type ColorProps = {
 }
 
 
-const ThemeColorChanger: React.FC<ColorProps> = ({ savePrevStyle }) => {
+const ColorChanger: React.FC<ColorProps> = ({ savePrevStyle }) => {
     const [colors, setColors] = useState<string[]>(['#fff']);
     const [categoryColors, setCategoryColors] = useState<{ [key: string]: string }>({ });
     const [style, setStyle] = useAtom(styleAtom);
@@ -73,7 +73,7 @@ const ThemeColorChanger: React.FC<ColorProps> = ({ savePrevStyle }) => {
                                     <Flex key={idx} align="center" justify={'space-between'} gap={8}>
                                         <Flex align="center" justify={'left'} gap={8}>
                                             <Text>テーマカラー {idx + 1}</Text>
-                                            <AntdThemeColorChanger
+                                            <AntdColorChanger
                                                 key={idx}
                                                 value={color}
                                                 onChange={(_, hex) => handleChange(idx, hex)}
@@ -114,35 +114,35 @@ const ThemeColorChanger: React.FC<ColorProps> = ({ savePrevStyle }) => {
                                 <Text strong>各カテゴリの色を指定</Text>
                                 <Flex align="center" gap={8}>
                                     <Text>建物</Text>
-                                    <AntdThemeColorChanger
+                                    <AntdColorChanger
                                         value={categoryColors.building}
                                         onChange={(_, hex) => handleCategoryChange('building', hex)}
                                     />
                                 </Flex>
                                 <Flex align="center" gap={8}>
                                     <Text>背景</Text>
-                                    <AntdThemeColorChanger
+                                    <AntdColorChanger
                                         value={categoryColors.background}
                                         onChange={(_, hex) => handleCategoryChange('background', hex)}
                                     />
                                 </Flex>
                                 <Flex align="center" gap={8}>
                                     <Text>草原</Text>
-                                    <AntdThemeColorChanger
+                                    <AntdColorChanger
                                         value={categoryColors.grass}
                                         onChange={(_, hex) => handleCategoryChange('grass', hex)}
                                     />
                                 </Flex>
                                 <Flex align="center" gap={8}>
                                     <Text>道</Text>
-                                    <AntdThemeColorChanger
+                                    <AntdColorChanger
                                         value={categoryColors.road}
                                         onChange={(_, hex) => handleCategoryChange('road', hex)}
                                     />
                                 </Flex>
                                 <Flex align="center" gap={8}>
                                     <Text>高速道路</Text>
-                                    <AntdThemeColorChanger
+                                    <AntdColorChanger
                                         value={categoryColors.highway}
                                         onChange={(_, hex) => handleCategoryChange('highway', hex)}
                                     />
@@ -165,4 +165,4 @@ const ThemeColorChanger: React.FC<ColorProps> = ({ savePrevStyle }) => {
     );
 };
 
-export default ThemeColorChanger;
+export default ColorChanger;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Tabs } from 'antd';
-import ThemeColorChanger from '../ThemeColorChanger/ThemeColorChanger';
+import ColorChanger from '../ColorChanger/ColorChanger';
 import LayerList from '../LayerList/LayerList';
 import type { StyleSpecification } from 'maplibre-gl';
 import LayerSortList from '../LayerSortList/LayerSortList';
@@ -20,7 +20,7 @@ const LayerEditor: React.FC<Props> = ({ savePrevStyle, addLayer }) => {
           {
             key: 'color',
             label: 'カラー編集',
-            children: <ThemeColorChanger savePrevStyle={savePrevStyle} />,
+            children: <ColorChanger savePrevStyle={savePrevStyle} />,
           },
           {
             key: 'layer',
