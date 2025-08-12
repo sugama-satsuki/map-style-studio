@@ -11,17 +11,10 @@ type ColorProps = {
     savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void
 }
 
-const defaultCategoryColors = {
-    building: '#cccccc',
-    background: '#ffffff',
-    grass: '#a8e063',
-    road: '#bbbbbb',
-    highway: '#ff9800',
-};
 
 const ThemeColorChanger: React.FC<ColorProps> = ({ savePrevStyle }) => {
     const [colors, setColors] = useState<string[]>(['#fff']);
-    const [categoryColors, setCategoryColors] = useState<{ [key: string]: string }>({ ...defaultCategoryColors });
+    const [categoryColors, setCategoryColors] = useState<{ [key: string]: string }>({ });
     const [style, setStyle] = useAtom(styleAtom);
     const [tab, setTab] = useState<'theme' | 'category'>('theme');
 
