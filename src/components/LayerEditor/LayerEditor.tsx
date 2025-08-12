@@ -14,11 +14,12 @@ const LayerEditor: React.FC<Props> = ({ savePrevStyle, addLayer }) => {
   return (
     <Card className='editor-card' id='layer-editor' size='small'>
       <Tabs
-        defaultActiveKey="themeColor"
+        defaultActiveKey="color"
+        type="card"
         items={[
           {
-            key: 'themeColor',
-            label: 'テーマカラーで生成',
+            key: 'color',
+            label: 'カラー編集',
             children: <ThemeColorChanger savePrevStyle={savePrevStyle} />,
           },
           {
