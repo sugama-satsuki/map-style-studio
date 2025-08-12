@@ -3,6 +3,7 @@ import { BgColorsOutlined } from '@ant-design/icons';
 import { useState } from "react";
 import { useAtom } from "jotai";
 import { styleAtom } from "../../atom";
+import { generateCategoryColorStyle, type CategoryColors } from "../../utils/generateCategoryColorStyle";
 
 type CategoryColorProps = {
     savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void
@@ -11,20 +12,28 @@ type CategoryColorProps = {
 const { Text } = Typography;
 
 
-const CategoryTabContent: React.FC<CategoryColorProps> = ({ savePrevStyle}) => {
+const CategoryTabContent: React.FC<CategoryColorProps> = ({ savePrevStyle }) => {
 
-    const [categoryColors, setCategoryColors] = useState<{ [key: string]: string }>({ });
+    const [categoryColors, setCategoryColors] = useState<CategoryColors>({
+        building: '',
+        background: '',
+        grass: '',
+        road: '',
+        highway: '',
+    });
     const [style, setStyle] = useAtom(styleAtom);
 
 
-    const handleCategoryChange = (key: string, color: string) => {
+    const handleCategoryChange = (key: keyof CategoryColors, color: string) => {
         setCategoryColors(prev => ({ ...prev, [key]: color }));
     };
 
     const generateStyleByCategory = async () => {
         if (!style || typeof style !== 'object') return;
         try {
-            const newStyle = style;
+            // categoryColorsの値を使い、
+            const newStyle = generateCategoryColorStyle(categoryColors, style);
+            console.log('Generated style:', newStyle);
             savePrevStyle(newStyle);
             setStyle(newStyle);
         } catch (e) {
