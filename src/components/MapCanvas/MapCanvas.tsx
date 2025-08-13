@@ -4,6 +4,7 @@ import { styleAtom } from '../../atom';
 import useMapInstance from '../../hooks/useMapInstance';
 import { useMapPopup } from '../../hooks/useMapPopup';
 import MapPopup from '../MapPopup/MapPopup';
+import AddressSearchBar from '../AddressSearchBar/AddressSearchBar';
 
 
 const MapCanvas: React.FC = () => {
@@ -21,6 +22,7 @@ const MapCanvas: React.FC = () => {
 
   return (
     <div style={{ position: 'relative' }} className="full-all">
+      <AddressSearchBar map={map} />
       <div data-testid="map-container" className="full-all" ref={containerRef} />
       {popupInfo && (
         <MapPopup
