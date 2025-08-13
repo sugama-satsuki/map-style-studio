@@ -8,7 +8,7 @@ import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 import FileImporter from '../FileImporter/FileImporter';
 import StyleJsonViewer from '../StyleJsonViewer/StyleJsonViewer';
-import { FileOutlined, UndoOutlined } from '@ant-design/icons';
+import { FileOutlined } from '@ant-design/icons';
 import sampleStyle from '../../assets/sample-style.json';
 import type { StyleSpecification } from 'maplibre-gl';
 import StyleUrlLoader from '../StyleUrlLoader/StyleUrlLoader';
@@ -69,6 +69,14 @@ const StyleEditor: React.FC = () => {
     setAddLayerModalOpen(false);
   };
 
+  const handleChangeStyle = () => {
+    if (style && typeof style !== 'string') {
+      setStyle(undefined);
+      prevStyleRef.current = null;
+    }
+    setLoadError(false);
+  }
+
   // style編集前に前の状態を保存する関数
   const savePrevStyle = (newStyle: typeof style) => {
     prevStyleRef.current = newStyle ? JSON.parse(JSON.stringify(newStyle)) : null;
@@ -98,13 +106,6 @@ const StyleEditor: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleUndo = () => {
-    if (prevStyleRef.current) {
-      setStyle(prevStyleRef.current);
-      prevStyleRef.current = null;
-    }
-  };
-
   const handleOpenSampleStyle = () => {
     setStyle(sampleStyle as unknown as StyleSpecification);
     setLoadError(false);
@@ -127,20 +128,16 @@ const StyleEditor: React.FC = () => {
       <Header>
         <Flex justify='space-between' align='center' style={{ width: '100%', height: '100%' }}>
           <Title level={3} style={{color: '#fff', lineHeight: 1, margin: 0}}>map style studio</Title>
-          <Flex gap={8}>
-            { prevStyleRef.current && (
-              <Button
-                icon={<UndoOutlined />}
-                onClick={handleUndo}
-                style={{ marginRight: 8 }}
-              >
-                1つ前に戻す
+          { style && 
+            <Flex gap={8}>
+              <Button type="default" onClick={handleChangeStyle}>
+                別のスタイルを読み込む
               </Button>
-            ) }
-            <Button type="primary" onClick={handleDownloadStyleJson}>
-              styleダウンロード
-            </Button>
-          </Flex>
+              <Button type="primary" onClick={handleDownloadStyleJson}>
+                styleダウンロード
+              </Button>
+            </Flex>
+          }
         </Flex>
       </Header>
       <Layout style={{ height: 'calc(100vh - 64px)' }}>
