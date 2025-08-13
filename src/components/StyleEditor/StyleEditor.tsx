@@ -8,7 +8,7 @@ import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 import FileImporter from '../FileImporter/FileImporter';
 import StyleJsonViewer from '../StyleJsonViewer/StyleJsonViewer';
-import { FileOutlined, UndoOutlined } from '@ant-design/icons';
+import { FileOutlined } from '@ant-design/icons';
 import sampleStyle from '../../assets/sample-style.json';
 import type { StyleSpecification } from 'maplibre-gl';
 import StyleUrlLoader from '../StyleUrlLoader/StyleUrlLoader';
@@ -98,13 +98,6 @@ const StyleEditor: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleUndo = () => {
-    if (prevStyleRef.current) {
-      setStyle(prevStyleRef.current);
-      prevStyleRef.current = null;
-    }
-  };
-
   const handleOpenSampleStyle = () => {
     setStyle(sampleStyle as unknown as StyleSpecification);
     setLoadError(false);
@@ -128,15 +121,6 @@ const StyleEditor: React.FC = () => {
         <Flex justify='space-between' align='center' style={{ width: '100%', height: '100%' }}>
           <Title level={3} style={{color: '#fff', lineHeight: 1, margin: 0}}>map style studio</Title>
           <Flex gap={8}>
-            { prevStyleRef.current && (
-              <Button
-                icon={<UndoOutlined />}
-                onClick={handleUndo}
-                style={{ marginRight: 8 }}
-              >
-                1つ前に戻す
-              </Button>
-            ) }
             <Button type="primary" onClick={handleDownloadStyleJson}>
               styleダウンロード
             </Button>
