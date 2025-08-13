@@ -13,41 +13,33 @@ export function useMapInstance(
 
   useEffect(() => {
     if (!containerRef.current || !style) { return; }
+
+    const center = map?.getCenter() || [139.767, 35.681] as [number, number];
+    const zoom = map?.getZoom() || 10;
   
-    if (!map) {
-      // mapオブジェクトがなければ新規生成
-      const mapObj = new maplibregl.Map({
-        container: containerRef.current,
-        style,
-        center: [139.767, 35.681],
-        zoom: 10,
-        hash: true,
-      });
+    // mapオブジェクトがなければ新規生成
+    const mapObj = new maplibregl.Map({
+      container: containerRef.current,
+      style,
+      center: center,
+      zoom: zoom,
+      hash: true,
+    });
 
-      mapObj.on('load', () => {
-        prevStyleRef.current = style;
-        setMap(mapObj);
+    mapObj.once('load', () => {
+      prevStyleRef.current = style;
+      setMap(mapObj);
 
-        // styleがstring（URL）の場合、map.getStyle()で取得したスタイルをatomにセット
-        if (typeof style === 'string') {
-          const mapStyle = mapObj.getStyle();
-          setStyle(mapStyle);
-        }
-      });
-
-      return () => {
-        mapObj.remove();
-      };
-
-    } else {
-      // すでにmapオブジェクトがあればstyleだけ更新
-      if (prevStyleRef.current !== style) {
-        map.once('styledata', () => {
-          prevStyleRef.current = style;
-        });
-        map.setStyle(style);
+      // styleがstring（URL）の場合、map.getStyle()で取得したスタイルをatomにセット
+      if (typeof style === 'string') {
+        const mapStyle = mapObj.getStyle();
+        setStyle(mapStyle);
       }
-    }
+    });
+
+    return () => {
+      mapObj.remove();
+    };
     
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerRef, setMap, setStyle, style]);
