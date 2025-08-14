@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Slider, Space, Typography, type SliderSingleProps } from 'antd';
+import { Slider, Space, Typography } from 'antd';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 import { adjustStyleBrightness, adjustStyleSaturation } from '../../utils/colorAdjustUtils';
