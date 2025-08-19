@@ -15,7 +15,6 @@ const BrightnessSaturationTabContent: React.FC<Props> = ({ savePrevStyle }) => {
     const [saturation, setSaturation] = useState(0);
     const [style, setStyle] = useAtom(styleAtom);
 
-    // 明度・彩度どちらかが変化したら即反映
     useEffect(() => {
         if (!style || typeof style !== 'object') { return; }
         const newStyle = adjustStyleBrightness(style, brightness);
