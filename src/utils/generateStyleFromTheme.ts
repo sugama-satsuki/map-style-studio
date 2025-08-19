@@ -118,3 +118,5 @@ export const generateStyleFromTheme = async (theme: ThemeColorsType, originalSty
 
   return newStyle;
 };
+
+export { hexToHsl };
