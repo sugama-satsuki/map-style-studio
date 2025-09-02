@@ -4,6 +4,7 @@ import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
 import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 import type { LayerSpecification, SourceSpecification } from 'maplibre-gl';
+import AddSourceModal from '../AddSourceModal/AddSourceModal';
 
 type SourcesProps = {
   savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void;
@@ -23,6 +24,7 @@ const SOURCE_TYPES = [
 const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
   const [style, setStyle] = useAtom(styleAtom);
   const [modalOpen, setModalOpen] = useState(false);
+  const [addSourceModalOpen, setAddSourceModalOpen] = useState(false);
   const [targetSourceId, setTargetSourceId] = useState<string | null>(null);
   const [referencedLayers, setReferencedLayers] = useState<LayerSpecification[]>([]);
   const [editSources, setEditSources] = useState<Record<string, Partial<SourceSpecification & { url?: string, attribution?: string, tiles?: string[] }>>>( {});
@@ -98,6 +100,14 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
     savePrevStyle(style);
     setStyle(newStyle);
     message.success(`"${sourceId}" を削除しました`);
+  };
+
+  const handleAddModalOpen = () => {
+    setAddSourceModalOpen(true);
+  };
+
+  const handleAddSource = (newSource: SourceSpecification) => {
+    console.log('新しいソースを追加:', newSource);
   };
 
   // モーダルで「一緒に削除」選択時
@@ -209,8 +219,18 @@ const SourceEditor: React.FC<SourcesProps> = ({ savePrevStyle }) => {
           <Text type="secondary">sourcesが定義されていません</Text>
         )}
         <Button type='primary' onClick={handleSave}>保存</Button>
-        <Button type='default' icon={<PlusOutlined />} size='large'>ソースを追加</Button>
+        <Button 
+          type='default' 
+          icon={<PlusOutlined />} 
+          size='large'
+          onClick={() => handleAddModalOpen()}
+        >ソースを追加</Button>
       </Space>
+      <AddSourceModal
+        open={addSourceModalOpen}
+        onOk={handleAddSource}
+        onCancel={() => setAddSourceModalOpen(false)}
+      />
       <Modal
         open={modalOpen}
         onOk={handleDeleteWithLayers}
