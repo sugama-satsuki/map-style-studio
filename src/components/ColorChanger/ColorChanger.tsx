@@ -9,7 +9,7 @@ type ColorProps = {
 
 
 const ColorChanger: React.FC<ColorProps> = ({ savePrevStyle }) => {
-    const [tab, setTab] = useState<'theme' | 'category'>('theme');
+    const [tab, setTab] = useState<'theme' | 'category'>('category');
 
     return (
         <div>
@@ -18,17 +18,17 @@ const ColorChanger: React.FC<ColorProps> = ({ savePrevStyle }) => {
                 onChange={key => setTab(key as 'theme' | 'category')}
                 items={[
                     {
-                        key: 'theme',
-                        label: 'テーマ',
-                        children: (
-                            <ThemeTabContent savePrevStyle={savePrevStyle} />
-                        ),
-                    },
-                    {
                         key: 'category',
                         label: 'カテゴリ別',
                         children: (
                             <CategoryTabContent savePrevStyle={savePrevStyle} />
+                        ),
+                    },
+                    {
+                        key: 'theme',
+                        label: 'テーマ',
+                        children: (
+                            <ThemeTabContent savePrevStyle={savePrevStyle} />
                         ),
                     }
                 ]}
