@@ -11,6 +11,14 @@ type CategoryColorProps = {
 
 const { Text } = Typography;
 
+const CATEGORY_LIST: { key: keyof CategoryColors; label: string }[] = [
+    { key: 'building', label: '建物' },
+    { key: 'background', label: '背景' },
+    { key: 'grass', label: '草原' },
+    { key: 'road', label: '道' },
+    { key: 'highway', label: '高速道路' },
+];
+
 
 const CategoryTabContent: React.FC<CategoryColorProps> = ({ savePrevStyle }) => {
 
@@ -44,41 +52,17 @@ const CategoryTabContent: React.FC<CategoryColorProps> = ({ savePrevStyle }) => 
     return (
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
             <Text strong>各カテゴリの色を指定</Text>
-            <Flex align="center" gap={8}>
-                <Text>建物</Text>
-                <ColorPicker
-                    value={categoryColors.building}
-                    onChange={(_, hex) => handleCategoryChange('building', hex)}
-                />
-            </Flex>
-            <Flex align="center" gap={8}>
-                <Text>背景</Text>
-                <ColorPicker
-                    value={categoryColors.background}
-                    onChange={(_, hex) => handleCategoryChange('background', hex)}
-                />
-            </Flex>
-            <Flex align="center" gap={8}>
-                <Text>草原</Text>
-                <ColorPicker
-                    value={categoryColors.grass}
-                    onChange={(_, hex) => handleCategoryChange('grass', hex)}
-                />
-            </Flex>
-            <Flex align="center" gap={8}>
-                <Text>道</Text>
-                <ColorPicker
-                    value={categoryColors.road}
-                    onChange={(_, hex) => handleCategoryChange('road', hex)}
-                />
-            </Flex>
-            <Flex align="center" gap={8}>
-                <Text>高速道路</Text>
-                <ColorPicker
-                    value={categoryColors.highway}
-                    onChange={(_, hex) => handleCategoryChange('highway', hex)}
-                />
-            </Flex>
+            
+            {CATEGORY_LIST.map(({ key, label }) => (
+                <Flex align="center" gap={8} key={key}>
+                    <Text>{label}</Text>
+                    <ColorPicker
+                        value={categoryColors[key]}
+                        onChange={(_, hex) => handleCategoryChange(key, hex)}
+                    />
+                </Flex>
+            ))}
+            
             <Button
                 type="primary"
                 icon={<BgColorsOutlined />}
