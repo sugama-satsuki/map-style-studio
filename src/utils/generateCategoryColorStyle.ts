@@ -6,6 +6,7 @@ export type CategoryColors = {
   grass: string;
   road: string;
   highway: string;
+  water: string;
 };
 
 /**
@@ -94,7 +95,22 @@ export function generateCategoryColorStyle(
       console.log('Highway color changed:', colors.highway);
     }
 
+    // 水域・海
+    if (
+      matchLayer(layer, /water|水域|海|sea|ocean|lake|river|pond|reservoir|canal|stream|bay|lagoon|pool|wetland|marsh|creek|channel|湖|川|池|貯水池|運河|小川|湾|湿地|沼地|水路/i) &&
+      layer.type === "fill" &&
+      newLayer.paint &&
+      "fill-color" in newLayer.paint
+    ) {
+      newLayer = {
+        ...newLayer,
+        paint: { ...newLayer.paint, "fill-color": colors.water }
+      } as LayerSpecification;
+      console.log('Water color changed:', colors.water);
+    }
+
     return newLayer;
+
   });
 
   return {

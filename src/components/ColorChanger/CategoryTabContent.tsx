@@ -17,6 +17,7 @@ const CATEGORY_LIST: { key: keyof CategoryColors; label: string }[] = [
     { key: 'grass', label: '草原' },
     { key: 'road', label: '道' },
     { key: 'highway', label: '高速道路' },
+    { key: 'water', label: '水域・海' },
 ];
 
 
@@ -28,20 +29,20 @@ const CategoryTabContent: React.FC<CategoryColorProps> = ({ savePrevStyle }) => 
         grass: '',
         road: '',
         highway: '',
+        water: ''
     });
     const [style, setStyle] = useAtom(styleAtom);
 
-
+    // カテゴリ毎の色を変更
     const handleCategoryChange = (key: keyof CategoryColors, color: string) => {
         setCategoryColors(prev => ({ ...prev, [key]: color }));
     };
 
+    // スタイル生成
     const generateStyleByCategory = async () => {
         if (!style || typeof style !== 'object') return;
         try {
-            // categoryColorsの値を使い、
             const newStyle = generateCategoryColorStyle(categoryColors, style);
-            console.log('Generated style:', newStyle);
             savePrevStyle(newStyle);
             setStyle(newStyle);
         } catch (e) {
@@ -52,7 +53,7 @@ const CategoryTabContent: React.FC<CategoryColorProps> = ({ savePrevStyle }) => 
     return (
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
             <Text strong>各カテゴリの色を指定</Text>
-            
+
             {CATEGORY_LIST.map(({ key, label }) => (
                 <Flex align="center" gap={8} key={key}>
                     <Text>{label}</Text>
