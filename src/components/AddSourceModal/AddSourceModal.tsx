@@ -13,11 +13,12 @@ const SOURCE_TYPES = [
 
 type AddSourceModalProps = {
   open: boolean;
-  onOk: (newSource: SourceSpecification) => void;
+  onOk: (sourceId: string, newSource: SourceSpecification) => void;
   onCancel: () => void;
 };
 
 const initialState = {
+  sourceId: '',
   type: 'vector',
   url: '',
   attribution: '',
@@ -41,7 +42,13 @@ const AddSourceModal: React.FC<AddSourceModalProps> = ({ open, onOk, onCancel })
       message.error('typeを選択してください');
       return;
     }
-    onOk(newSource as SourceSpecification);
+    if (!newSource.sourceId || newSource.sourceId.trim() === '') {
+      message.error('source名を入力してください');
+      return;
+    }
+    const { sourceId, ...sourceSpec } = newSource;
+    console.log('追加するソース:', sourceId, sourceSpec, newSource);
+    onOk(sourceId, sourceSpec as SourceSpecification);
     setNewSource(initialState);
   };
 
@@ -57,6 +64,12 @@ const AddSourceModal: React.FC<AddSourceModalProps> = ({ open, onOk, onCancel })
       title="新しいソースを追加"
     >
       <Space direction="vertical" style={{ width: '100%' }} size="small">
+        <Input
+          addonBefore="source名"
+          placeholder="source名を入力"
+          value={newSource.sourceId}
+          onChange={e => handleChange('sourceId', e.target.value)}
+        />
         <div>
           <label>type</label>
           <Select
@@ -76,19 +89,19 @@ const AddSourceModal: React.FC<AddSourceModalProps> = ({ open, onOk, onCancel })
           />
         )}
         {(newSource.type !== 'geojson' && newSource.type !== 'image') && (
-            <Input
-                addonBefore={newSource.type === 'video' ? "urls" : "tiles"}
-                placeholder="カンマ区切りで複数指定"
-                value={Array.isArray(newSource.tiles) ? newSource.tiles.join(',') : ''}
-                onChange={e =>
-                handleChange(
-                    'tiles',
-                    e.target.value
-                    ? e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean)
-                    : []
-                )
-                }
-            />
+          <Input
+            addonBefore={newSource.type === 'video' ? "urls" : "tiles"}
+            placeholder="カンマ区切りで複数指定"
+            value={Array.isArray(newSource.tiles) ? newSource.tiles.join(',') : ''}
+            onChange={e =>
+              handleChange(
+                'tiles',
+                e.target.value
+                  ? e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean)
+                  : []
+              )
+            }
+          />
         )}
         <Input
           addonBefore="attribution"
