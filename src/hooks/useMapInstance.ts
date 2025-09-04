@@ -44,6 +44,8 @@ export function useMapInstance(
           closeOnClick: false
         })
       }));
+
+      console.log('Map instance created');
     });
 
     return () => {

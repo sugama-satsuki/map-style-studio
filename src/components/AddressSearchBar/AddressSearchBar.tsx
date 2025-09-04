@@ -36,7 +36,7 @@ const AddressSearchBar: React.FC<Props> = ({ map }) => {
     <div style={{
       position: 'absolute',
       top: 4,
-      right: 4,
+      left: 4,
       zIndex: 10,
       background: 'rgba(255,255,255,0.9)',
       borderRadius: 8,
