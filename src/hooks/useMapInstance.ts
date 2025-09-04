@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import maplibregl, { type StyleSpecification } from 'maplibre-gl';
 import { useAtom } from 'jotai';
 import { mapAtom, styleAtom } from '../atom';
+import MaplibreInspect from '@maplibre/maplibre-gl-inspect';
+
 
 export function useMapInstance(
   containerRef: React.RefObject<HTMLDivElement | null>,
@@ -16,7 +18,7 @@ export function useMapInstance(
 
     const center = map?.getCenter() || [139.767, 35.681] as [number, number];
     const zoom = map?.getZoom() || 10;
-    console.log(style);
+
     // mapオブジェクトがなければ新規生成
     const mapObj = new maplibregl.Map({
       container: containerRef.current,
@@ -35,6 +37,13 @@ export function useMapInstance(
         const mapStyle = mapObj.getStyle();
         setStyle(mapStyle);
       }
+
+      mapObj.addControl(new MaplibreInspect({
+        popup: new maplibregl.Popup({
+          closeButton: false,
+          closeOnClick: false
+        })
+      }));
     });
 
     return () => {
