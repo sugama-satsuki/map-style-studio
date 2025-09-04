@@ -39,6 +39,8 @@ export function useMapInstance(
       }
 
       mapObj.addControl(new MaplibreInspect({
+        // TODO: sourceが新しく追加されたらデフォルトでtrueにするように修正
+        showInspectMap: false,
         popup: new maplibregl.Popup({
           closeButton: false,
           closeOnClick: false
