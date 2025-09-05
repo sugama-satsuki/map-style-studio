@@ -12,7 +12,7 @@ const MapCanvas: React.FC = () => {
   const style = useAtomValue(styleAtom);
 
   // mapインスタンスを生成
-  const map = useMapInstance(containerRef, style);
+  const {map} = useMapInstance(containerRef, style);
 
   const { popupInfo, setPopupInfo } = useMapPopup(map);
 

@@ -13,7 +13,6 @@ export function useMapPopup(map: MapLibreMap | null) {
 
   const handleClick = useCallback((e: MapMouseEvent) => {
     const features = map?.queryRenderedFeatures(e.point);
-    console.log('Clicked features:', features);
 
     if (features && features.length > 0) {
       setPopupInfo({
@@ -31,7 +30,7 @@ export function useMapPopup(map: MapLibreMap | null) {
 
   useEffect(() => {
     if (!map) { return; }
-    
+    console.log('Setting up map click listener for popup', map);
     map.on('click', handleClick);
 
     return () => {

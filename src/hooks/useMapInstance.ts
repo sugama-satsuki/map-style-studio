@@ -3,6 +3,7 @@ import maplibregl, { type StyleSpecification } from 'maplibre-gl';
 import { useAtom } from 'jotai';
 import { mapAtom, styleAtom } from '../atom';
 import MaplibreInspect from '@maplibre/maplibre-gl-inspect';
+import { getSourcesFromStyle } from '../utils/sourceUtils';
 
 
 export function useMapInstance(
@@ -12,6 +13,7 @@ export function useMapInstance(
   const [map, setMap] = useAtom(mapAtom);
   const [, setStyle] = useAtom(styleAtom);
   const prevStyleRef = useRef<StyleSpecification | string | undefined>(undefined);
+  const inspectRef = useRef<MaplibreInspect | null>(null);
 
   useEffect(() => {
     if (!containerRef.current || !style) { return; }
@@ -38,14 +40,16 @@ export function useMapInstance(
         setStyle(mapStyle);
       }
 
-      mapObj.addControl(new MaplibreInspect({
-        // TODO: sourceが新しく追加されたらデフォルトでtrueにするように修正
-        showInspectMap: false,
+      inspectRef.current = new MaplibreInspect({
+        sources: getSourcesFromStyle(mapObj.getStyle()),
+        assignLayerColor: () => '#CC66FF',
         popup: new maplibregl.Popup({
           closeButton: false,
           closeOnClick: false
         })
-      }));
+      });
+      mapObj.addControl(inspectRef.current);
+
 
       console.log('Map instance created');
     });
@@ -57,7 +61,19 @@ export function useMapInstance(
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerRef, setMap, setStyle, style]);
 
-  return map;
+  // ON/OFF切り替え関数
+  const toggleInspect = (on: boolean) => {
+    if (inspectRef.current) {
+      if (on) {
+        // inspectRef.current.onAdd();
+        console.log('Inspect mode activated');
+      } else {
+        inspectRef.current.onRemove();
+      }
+    }
+  };
+
+  return {map, toggleInspect};
 }
 
 export default useMapInstance;
