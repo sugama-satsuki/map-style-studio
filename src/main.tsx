@@ -37,17 +37,18 @@ localStorage.setItem(SESSION_START_KEY, String(Date.now()));
 
 // セッション終了時にSentryへ送信
 window.addEventListener('beforeunload', () => {
-  const now = Date.now();
-  const start = Number(localStorage.getItem(SESSION_START_KEY));
-  const duration = start ? (now - start) / 1000 : 0;
+  const now = new Date();
+  const startTimestamp = Number(localStorage.getItem(SESSION_START_KEY));
+  const startDate = startTimestamp ? new Date(startTimestamp) : null;
+  const duration = startTimestamp ? (now.getTime() - startTimestamp) / 1000 : 0;
   Sentry.captureMessage('session_info', {
     level: 'info',
     extra: {
       random_id: localStorage.getItem(RANDOM_KEY),
       first_login: localStorage.getItem(FIRST_LOGIN_KEY),
       session_count: localStorage.getItem(SESSION_COUNT_KEY),
-      session_start_time: start,
-      session_end_time: now,
+      session_start_time: startDate ? startDate.toISOString() : '',
+      session_end_time: now.toISOString(),
       session_duration_sec: duration
     }
   });
