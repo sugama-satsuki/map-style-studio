@@ -10,4 +10,17 @@ module.exports = {
     '\\.css$': 'identity-obj-proxy'
   },
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
+  collectCoverageFrom: [
+    'src/utils/**/*.{ts,tsx}',
+    'src/hooks/**/*.ts',
+    '!src/**/*.d.ts',
+  ],
+  coverageThreshold: {
+    global: {
+      lines: 100,
+      functions: 100,
+      branches: 100,
+      statements: 100,
+    },
+  },
 };
