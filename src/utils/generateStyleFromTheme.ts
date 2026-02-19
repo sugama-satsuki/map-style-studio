@@ -41,7 +41,8 @@ export function replaceColorValue(value: unknown, themeColor: string): unknown {
     ) {
       return themeColor;
     }
-    // rgb/rgba形式だった場合はhexに変換して返す
+    // rgb/rgba形式だった場合はhexに変換して返す (上の条件に包含されるため実際には到達しない)
+    /* istanbul ignore next */
     if (/^#([0-9a-f]{3,8})$/i.test(color)) {
       return color;
     }

@@ -83,6 +83,13 @@ describe('rgbToHsv', () => {
     expect(h).toBeGreaterThan(240);
     expect(h).toBeLessThan(300);
   });
+
+  it('r が max かつ g < b のケース (h が 300 度台)', () => {
+    // r=255, g=50, b=200 → r is max, g < b → h = (g-b)/d + 6 branch を通る
+    const { h } = rgbToHsv(255, 50, 200);
+    expect(h).toBeGreaterThan(300);
+    expect(h).toBeLessThan(360);
+  });
 });
 
 describe('isGreenColor', () => {
@@ -105,10 +112,15 @@ describe('isGreenColor', () => {
 });
 
 describe('isRedColor', () => {
-  it('赤色は true', () => {
+  it('赤色は true (h 0-20 範囲)', () => {
     expect(isRedColor('#ff0000')).toBe(true);
     expect(isRedColor('#cc0000')).toBe(true);
     expect(isRedColor('#ff3333')).toBe(true);
+  });
+
+  it('赤色は true (h 340-360 範囲: ピンク寄りの赤)', () => {
+    // r=255, g=0, b=51 → r max, g < b → h ≈ 348 (340-360 ブランチ)
+    expect(isRedColor('#ff0033')).toBe(true);
   });
 
   it('赤色の範囲外は false', () => {
@@ -160,8 +172,8 @@ describe('isBlueColor', () => {
 
 describe('isBrownColor', () => {
   it('茶色は true', () => {
-    expect(isBrownColor('#8B4513')).toBe(true); // SaddleBrown
-    expect(isBrownColor('#A0522D')).toBe(true); // Sienna
+    expect(isBrownColor('#8B4513')).toBe(true); // SaddleBrown (h≈25, s≈0.86, v≈0.55)
+    expect(isBrownColor('#804000')).toBe(true); // ダークオレンジブラウン (h≈30, s=1, v≈0.50)
   });
 
   it('茶色でないは false', () => {

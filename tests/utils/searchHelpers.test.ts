@@ -1,61 +1,21 @@
 import { isLayerMatched } from '../../src/utils/searchHelpers';
 import type { LayerSpecification } from 'maplibre-gl';
 
+// FillLayerSpecification は source が必須のため unknown 経由でキャスト
+function layer(obj: Record<string, unknown>): LayerSpecification {
+  return obj as unknown as LayerSpecification;
+}
+
 // テスト用レイヤー
-const fillLayer: LayerSpecification = {
-  id: 'building-fill',
-  type: 'fill',
-  paint: { 'fill-color': '#cc0000' }, // 赤
-};
-
-const lineLayer: LayerSpecification = {
-  id: 'road-line',
-  type: 'line',
-  paint: { 'line-color': '#00cc00' }, // 緑
-  filter: ['==', 'class', 'motorway'],
-};
-
-const symbolLayer: LayerSpecification = {
-  id: 'poi-label',
-  type: 'symbol',
-  layout: { 'text-field': '{name}' },
-};
-
-const greenLayer: LayerSpecification = {
-  id: 'park-fill',
-  type: 'fill',
-  paint: { 'fill-color': '#33aa33' }, // 緑
-};
-
-const blueLayer: LayerSpecification = {
-  id: 'water-fill',
-  type: 'fill',
-  paint: { 'fill-color': '#3366ff' }, // 青
-};
-
-const yellowLayer: LayerSpecification = {
-  id: 'highway-fill',
-  type: 'fill',
-  paint: { 'fill-color': '#ffcc00' }, // 黄
-};
-
-const brownLayer: LayerSpecification = {
-  id: 'soil-fill',
-  type: 'fill',
-  paint: { 'fill-color': '#8B4513' }, // 茶
-};
-
-const blackLayer: LayerSpecification = {
-  id: 'dark-layer',
-  type: 'fill',
-  paint: { 'fill-color': '#000000' }, // 黒
-};
-
-const whiteLayer: LayerSpecification = {
-  id: 'light-layer',
-  type: 'fill',
-  paint: { 'fill-color': '#ffffff' }, // 白
-};
+const fillLayer = layer({ id: 'building-fill', type: 'fill', paint: { 'fill-color': '#cc0000' } }); // 赤
+const lineLayer = layer({ id: 'road-line', type: 'line', paint: { 'line-color': '#00cc00' }, filter: ['==', 'class', 'motorway'] }); // 緑
+const symbolLayer = layer({ id: 'poi-label', type: 'symbol', layout: { 'text-field': '{name}' } });
+const greenLayer = layer({ id: 'park-fill', type: 'fill', paint: { 'fill-color': '#33aa33' } }); // 緑
+const blueLayer = layer({ id: 'water-fill', type: 'fill', paint: { 'fill-color': '#3366ff' } }); // 青
+const yellowLayer = layer({ id: 'highway-fill', type: 'fill', paint: { 'fill-color': '#ffcc00' } }); // 黄
+const brownLayer = layer({ id: 'soil-fill', type: 'fill', paint: { 'fill-color': '#8B4513' } }); // 茶
+const blackLayer = layer({ id: 'dark-layer', type: 'fill', paint: { 'fill-color': '#000000' } }); // 黒
+const whiteLayer = layer({ id: 'light-layer', type: 'fill', paint: { 'fill-color': '#ffffff' } }); // 白
 
 describe('isLayerMatched', () => {
   describe('テキスト検索', () => {

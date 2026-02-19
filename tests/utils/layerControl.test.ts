@@ -1,13 +1,18 @@
 import { groupLayersByType } from '../../src/utils/layerControl';
 import type { LayerSpecification } from 'maplibre-gl';
 
+// source が必須の型を回避するヘルパー
+function layer(obj: Record<string, unknown>): LayerSpecification {
+  return obj as unknown as LayerSpecification;
+}
+
 describe('groupLayersByType', () => {
   it('circle / line / fill / symbol を正しいグループに分類する', () => {
     const layers: LayerSpecification[] = [
-      { id: 'c1', type: 'circle' },
-      { id: 'l1', type: 'line' },
-      { id: 'f1', type: 'fill' },
-      { id: 's1', type: 'symbol' },
+      layer({ id: 'c1', type: 'circle' }),
+      layer({ id: 'l1', type: 'line' }),
+      layer({ id: 'f1', type: 'fill' }),
+      layer({ id: 's1', type: 'symbol' }),
     ];
     const result = groupLayersByType(layers);
 
@@ -20,9 +25,9 @@ describe('groupLayersByType', () => {
 
   it('未知のタイプ (raster, background など) は other に分類される', () => {
     const layers: LayerSpecification[] = [
-      { id: 'r1', type: 'raster' },
-      { id: 'bg1', type: 'background' },
-      { id: 'fe1', type: 'fill-extrusion' },
+      layer({ id: 'r1', type: 'raster' }),
+      layer({ id: 'bg1', type: 'background' }),
+      layer({ id: 'fe1', type: 'fill-extrusion' }),
     ];
     const result = groupLayersByType(layers);
 
@@ -45,9 +50,9 @@ describe('groupLayersByType', () => {
 
   it('同一タイプが複数あっても正しくグループ化される', () => {
     const layers: LayerSpecification[] = [
-      { id: 'l1', type: 'line' },
-      { id: 'l2', type: 'line' },
-      { id: 'l3', type: 'line' },
+      layer({ id: 'l1', type: 'line' }),
+      layer({ id: 'l2', type: 'line' }),
+      layer({ id: 'l3', type: 'line' }),
     ];
     const result = groupLayersByType(layers);
     expect(result.line).toHaveLength(3);

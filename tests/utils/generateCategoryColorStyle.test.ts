@@ -70,4 +70,42 @@ describe('generateCategoryColorStyle', () => {
     const newStyle = generateCategoryColorStyle(colors, style);
     expect(newStyle.layers?.find(l => l.id === 'unrelated-layer')?.paint?.['icon-color']).toBe('#123456');
   });
+
+  it('source-layer 名でカテゴリを判定できること', () => {
+    // matchLayer の String(layer['source-layer']) ブランチを通る
+    const style: StyleSpecification = {
+      version: 8,
+      sources: { test: { type: 'vector', tiles: [] } },
+      layers: [
+        {
+          id: 'my-fill',
+          type: 'fill',
+          source: 'test',
+          'source-layer': 'building',  // source-layer でマッチ
+          paint: { 'fill-color': '#000000' }
+        } as unknown as StyleSpecification['layers'][0],
+        {
+          id: 'my-road',
+          type: 'line',
+          source: 'test',
+          'source-layer': 'road',
+          paint: { 'line-color': '#000000' }
+        } as unknown as StyleSpecification['layers'][0],
+      ]
+    } as StyleSpecification;
+    const newStyle = generateCategoryColorStyle(colors, style);
+    expect(newStyle.layers?.find(l => l.id === 'my-fill')?.paint?.['fill-color']).toBe(colors.building);
+    expect(newStyle.layers?.find(l => l.id === 'my-road')?.paint?.['line-color']).toBe(colors.road);
+  });
+
+  it('layers が undefined のとき元の style.layers を返す', () => {
+    // newLayers ?? style.layers ブランチを通る
+    const style = {
+      version: 8,
+      sources: {},
+      // layers を undefined にする
+    } as unknown as StyleSpecification;
+    const newStyle = generateCategoryColorStyle(colors, style);
+    expect(newStyle.layers).toBeUndefined();
+  });
 });

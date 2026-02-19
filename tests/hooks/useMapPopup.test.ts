@@ -65,6 +65,22 @@ describe('useMapPopup', () => {
     expect(result.current.popupInfo?.lngLat).toEqual([139.7, 35.6]);
     expect(result.current.popupInfo?.point).toEqual({ x: 100, y: 200 });
     expect(result.current.popupInfo?.properties[0].layerId).toBe('building-fill');
+    expect(result.current.popupInfo?.properties[0].properties).toEqual({ name: 'Test Building' });
+  });
+
+  it('フィーチャの properties が null の場合 → {} にフォールバックする', () => {
+    const map = new MockMap();
+    map.setFeatures([
+      { layer: { id: 'test-layer' }, properties: null },  // properties が null
+    ]);
+
+    const { result } = renderHook(() => useMapPopup(map as unknown as maplibregl.Map));
+
+    act(() => {
+      map.emit('click', makeMouseEvent(10, 20, 135.0, 34.0));
+    });
+
+    expect(result.current.popupInfo?.properties[0].properties).toEqual({});
   });
 
   it('クリックでフィーチャがない場合 → popupInfo が null になる', () => {

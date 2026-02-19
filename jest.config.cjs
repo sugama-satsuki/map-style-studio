@@ -10,6 +10,14 @@ module.exports = {
     '\\.css$': 'identity-obj-proxy'
   },
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
+  // tests/e2e/ は Playwright/Cucumber が担当するため Jest では除外
+  testPathIgnorePatterns: ['/node_modules/', 'tests/e2e/'],
+  globals: {
+    'ts-jest': {
+      // 型チェックは tsc --noEmit で行うため Jest では無効化
+      diagnostics: false,
+    },
+  },
   collectCoverageFrom: [
     'src/utils/**/*.{ts,tsx}',
     'src/hooks/**/*.ts',
