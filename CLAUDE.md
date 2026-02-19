@@ -75,7 +75,7 @@ React + TypeScript + Vite。
 ## アーキテクチャ
 
 - `src/components/` — React コンポーネント (`.tsx` + `.css`)
-- `src/hooks/` — カスタムフック (`useGeoloniaMap`)
+- `src/hooks/` — カスタムフック
 - `src/lib/` — 純粋関数ユーティリティ
 - `e2e/` — E2E テスト一式
 - `.github/workflows/` — CI 設定
