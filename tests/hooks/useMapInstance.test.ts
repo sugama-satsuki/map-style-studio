@@ -2,7 +2,7 @@ import { renderHook, act } from '@testing-library/react';
 import useMapInstance from '../../src/hooks/useMapInstance';
 import type { StyleSpecification } from 'maplibre-gl';
 
-// maplibre-gl をモック
+// window.geolonia をモック (CDN経由のGeolonia Mapsの代替)
 const mockMapInstance = {
   once: jest.fn(),
   getCenter: jest.fn().mockReturnValue([139.767, 35.681]),
@@ -11,12 +11,12 @@ const mockMapInstance = {
   remove: jest.fn(),
 };
 
-jest.mock('maplibre-gl', () => ({
-  __esModule: true,
-  default: {
-    Map: jest.fn().mockImplementation(() => mockMapInstance),
-  },
-}));
+const MockGeoloniaMap = jest.fn().mockImplementation(() => mockMapInstance);
+
+Object.defineProperty(window, 'geolonia', {
+  value: { Map: MockGeoloniaMap },
+  writable: true,
+});
 
 const dummyStyle: StyleSpecification = {
   version: 8,
@@ -33,31 +33,25 @@ describe('useMapInstance', () => {
   });
 
   it('containerRef が null の場合は Map を作成しない', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const maplibregl = require('maplibre-gl').default;
     const containerRef = { current: null } as React.RefObject<HTMLDivElement | null>;
     renderHook(() => useMapInstance(containerRef, dummyStyle));
-    expect(maplibregl.Map).not.toHaveBeenCalled();
+    expect(MockGeoloniaMap).not.toHaveBeenCalled();
   });
 
   it('style が undefined の場合は Map を作成しない', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const maplibregl = require('maplibre-gl').default;
     const containerRef = { current: document.createElement('div') } as React.RefObject<HTMLDivElement | null>;
     renderHook(() => useMapInstance(containerRef, undefined));
-    expect(maplibregl.Map).not.toHaveBeenCalled();
+    expect(MockGeoloniaMap).not.toHaveBeenCalled();
   });
 
   it('containerRef と style が揃ったとき Map を作成する', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const maplibregl = require('maplibre-gl').default;
     const containerRef = { current: document.createElement('div') } as React.RefObject<HTMLDivElement | null>;
 
     act(() => {
       renderHook(() => useMapInstance(containerRef, dummyStyle));
     });
 
-    expect(maplibregl.Map).toHaveBeenCalledWith(
+    expect(MockGeoloniaMap).toHaveBeenCalledWith(
       expect.objectContaining({ container: containerRef.current, style: dummyStyle })
     );
   });
