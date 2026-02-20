@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "allowImportingTsExtensions": false,
+    "verbatimModuleSyntax": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["e2e/**/*.ts", "src/**/*.ts", "src/**/*.tsx"]
+}

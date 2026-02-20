@@ -38,8 +38,6 @@ const AddLayerModal: React.FC<AddLayerModalProps> = ({
           onChange={layerId => {
             const layer = layers.find(l => l.id === layerId);
             if (layer) {
-              console.log('コピーするレイヤー:', (layer as { 'source-layer': string })['source-layer']);
-              // コピー内容をフォームにセット
               form.setFieldsValue({
                 id: `${layer.id}_copy`,
                 source: 'source' in layer ? (layer as { source: string }).source : '',
@@ -63,42 +61,45 @@ const AddLayerModal: React.FC<AddLayerModalProps> = ({
         label="レイヤーID"
         name="id"
         rules={[{ required: true, message: 'レイヤーIDを入力してください' }]}
+        tooltip="このレイヤーを識別するための名前です（例: my-road-layer）"
       >
         <Input />
       </Form.Item>
       <Form.Item
-        label="source"
+        label="ソース (source)"
         name="source"
         rules={[{ required: true, message: 'sourceを入力してください' }]}
+        tooltip="データの供給元のIDです。「ソース」タブで追加したソースのIDを指定します（例: geolonia-tiles）"
       >
-        <Input />
+        <Input placeholder="例: geolonia-tiles" />
       </Form.Item>
       <Form.Item
-        label="source-layer"
+        label="ソースレイヤー (source-layer)"
         name="sourceLayer"
+        tooltip="ベクタータイル内の特定のデータ層の名前です。vectorタイプのソースで必要です（例: building, road, water）"
       >
-        <Input />
+        <Input placeholder="例: building" />
       </Form.Item>
       <Form.Item
-        label="filter (JSON形式)"
+        label="フィルター (filter)"
         name="filter"
-        tooltip='例: ["==", "class", "A"]'
+        tooltip='表示するデータを絞り込む条件をJSON形式で指定します。例: ["==", "class", "motorway"] は class が motorway のものだけ表示します'
       >
-        <Input.TextArea rows={2} placeholder='["==", "class", "A"]' />
+        <Input.TextArea rows={2} placeholder='["==", "class", "motorway"]' />
       </Form.Item>
       <Form.Item
-        label="paint (JSON形式)"
+        label="ペイント (paint)"
         name="paint"
-        tooltip='例: {"circle-color": "#ff0000"}'
+        tooltip='色・透明度・太さなど見た目のプロパティをJSON形式で指定します。例: {"fill-color": "#ff0000", "fill-opacity": 0.8}'
       >
-        <Input.TextArea rows={2} placeholder='{"circle-color": "#ff0000"}' />
+        <Input.TextArea rows={2} placeholder='{"fill-color": "#ff0000"}' />
       </Form.Item>
       <Form.Item
-        label="layout (JSON形式)"
+        label="レイアウト (layout)"
         name="layout"
-        tooltip='例: {"icon-image": "my-icon"}'
+        tooltip='テキストの向きやアイコンの配置ルールをJSON形式で指定します。例: {"text-field": "{name}", "text-size": 12}'
       >
-        <Input.TextArea rows={2} placeholder='{"icon-image": "my-icon"}' />
+        <Input.TextArea rows={2} placeholder='{"text-field": "{name}"}' />
       </Form.Item>
     </Form>
   </Modal>

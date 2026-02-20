@@ -1,12 +1,13 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ColorChanger from '../../src/components/ColorChanger/ColorChanger';
 
 describe('ColorChanger', () => {
+  const mockSavePrevStyle = jest.fn();
+
   test('ColorChangerコンポーネントがレンダリングされる', () => {
-    render(<ColorChanger />);
-    // 例: テーマカラー設定用のUIが表示されるか確認
-    // expect(screen.getByText('テーマカラー')).toBeInTheDocument();
+    const { container } = render(<ColorChanger savePrevStyle={mockSavePrevStyle} />);
+    expect(container).toBeTruthy();
   });
 });

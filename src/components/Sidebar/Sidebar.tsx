@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Menu, Avatar, Space, Flex } from 'antd';
+import { Typography, Menu, Avatar, Space, Flex, Tag } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 
 const { Text, Link } = Typography;
@@ -11,7 +11,11 @@ const items = [
     },
     {
         key: 'sprite',
-        label: 'スプライト',
+        label: (
+            <span>
+                スプライト <Tag color="default" style={{ marginLeft: 4, fontSize: 10 }}>準備中</Tag>
+            </span>
+        ),
     },
     {
         key: 'sources',

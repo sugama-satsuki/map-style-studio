@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "jest",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "TS_NODE_PROJECT=tsconfig.cucumber.json start-server-and-test dev http-get://localhost:5173 cucumber-js",
+    "test:e2e:headed": "HEADED=1 TS_NODE_PROJECT=tsconfig.cucumber.json start-server-and-test dev http-get://localhost:5173 cucumber-js"
   },
   "dependencies": {
     "@ant-design/v5-patch-for-react-19": "^1.0.3",

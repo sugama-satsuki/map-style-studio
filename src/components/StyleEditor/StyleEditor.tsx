@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Flex, Form, Layout, Typography } from 'antd';
+import { Button, Flex, Form, Layout, Typography, Tag } from 'antd';
 import './StyleEditor.css';
 import MapCanvas from '../MapCanvas/MapCanvas';
 import Sidebar from '../Sidebar/Sidebar';
@@ -8,7 +8,7 @@ import { useAtom } from 'jotai';
 import { styleAtom } from '../../atom';
 import FileImporter from '../FileImporter/FileImporter';
 import StyleJsonViewer from '../StyleJsonViewer/StyleJsonViewer';
-import { FileOutlined } from '@ant-design/icons';
+import { DownloadOutlined, FileOutlined, LinkOutlined, FolderOpenOutlined } from '@ant-design/icons';
 import sampleStyle from '../../assets/sample-style.json';
 import type { StyleSpecification } from 'maplibre-gl';
 import StyleUrlLoader from '../StyleUrlLoader/StyleUrlLoader';
@@ -19,6 +19,8 @@ import AddLayerModal from '../AddLayerModal/AddLayerModal';
 
 const { Sider, Content } = Layout;
 const { Title, Text } = Typography;
+
+const GEOLONIA_BASIC_STYLE = 'https://smartmap.styles.geoloniamaps.com/style.json';
 
 const StyleEditor: React.FC = () => {
   // サイドバーの選択状態を管理
@@ -59,9 +61,7 @@ const StyleEditor: React.FC = () => {
         layers: [...(style?.layers ?? []), newLayer]
       };
       setStyle(newStyle as StyleSpecification);
-      // 必要ならsavePrevStyle(newStyle);
       setAddLayerModalOpen(false);
-      // message.success('レイヤーを追加しました');
     });
   };
 
@@ -85,16 +85,13 @@ const StyleEditor: React.FC = () => {
   // style.jsonダウンロード処理
   const handleDownloadStyleJson = () => {
     if (!style) { return; }
-    // 日付をMMDD形式で取得
     const now = new Date();
     const yyyy = now.getFullYear();
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const dd = String(now.getDate()).padStart(2, '0');
     const defaultFileName = `style_${yyyy}${mm}${dd}.json`;
 
-    // ファイル名をユーザーに入力させる
     const fileName = window.prompt('保存するファイル名を入力してください', defaultFileName);
-
     if (!fileName) { return; }
 
     const blob = new Blob([JSON.stringify(style, null, 2)], { type: 'application/json' });
@@ -111,10 +108,26 @@ const StyleEditor: React.FC = () => {
     setLoadError(false);
   };
 
+  const handleOpenGeoloniaStyle = () => {
+    setStyle(GEOLONIA_BASIC_STYLE);
+    setLoadError(false);
+  };
+
   // サイドバー内で表示するコンポーネントを切り替え
   let sidebarContent = null;
   if (selectedMenu === 'basic-info') {
     sidebarContent = <BasicInfo />;
+  } else if (selectedMenu === 'sprite') {
+    sidebarContent = (
+      <Flex vertical align='center' justify='center' gap={12} style={{ padding: 32, flex: 1 }}>
+        <Text style={{ fontSize: 32 }}>🖼️</Text>
+        <Text strong style={{ fontSize: 16 }}>スプライト機能は準備中です</Text>
+        <Text type="secondary" style={{ textAlign: 'center', maxWidth: 280 }}>
+          スプライトとは、地図上に表示するアイコン画像のセットです。
+          この機能は近日公開予定です。
+        </Text>
+      </Flex>
+    );
   } else if (selectedMenu === 'sources') {
     sidebarContent = <SourceEditor savePrevStyle={savePrevStyle} />;
   } else if (selectedMenu === 'layer') {
@@ -133,8 +146,13 @@ const StyleEditor: React.FC = () => {
               <Button type="default" onClick={handleChangeStyle}>
                 別のスタイルを読み込む
               </Button>
-              <Button type="primary" onClick={handleDownloadStyleJson}>
-                styleダウンロード
+              <Button
+                type="primary"
+                icon={<DownloadOutlined />}
+                onClick={handleDownloadStyleJson}
+                data-testid="download-button"
+              >
+                スタイルを保存する
               </Button>
             </Flex>
           }
@@ -163,24 +181,60 @@ const StyleEditor: React.FC = () => {
                 vertical
                 justify='center'
                 align='center'
-                gap={16}
-                style={{ textAlign: 'center', padding: '20px', height: '100%' }}
+                gap={8}
+                style={{ textAlign: 'center', padding: '40px 20px', height: '100%' }}
               >
+                <Title level={3} style={{ marginBottom: 4 }}>地図スタイルを読み込む</Title>
+                <Text type="secondary" style={{ marginBottom: 24, maxWidth: 480 }}>
+                  スタイルとは、地図の色・デザインを定義するJSONファイルです。
+                  以下のいずれかの方法で読み込んでください。
+                </Text>
                 {loadError && (
-                  <Text type="danger" strong>スタイルの読み込みに失敗しました</Text>
+                  <Text type="danger" strong style={{ marginBottom: 8 }}>スタイルの読み込みに失敗しました</Text>
                 )}
-                <Button
-                  type="default" 
-                  size='large'
-                  icon={<FileOutlined />}
-                  onClick={handleOpenSampleStyle}
-                >
-                  サンプルスタイルを開く
-                </Button>
-                <Text strong>OR</Text>
-                <StyleUrlLoader setLoadError={setLoadError} />
-                <Text strong>OR</Text>
-                <FileImporter setLoadError={setLoadError} />
+                <Flex vertical align='center' gap={4}>
+                  <Button
+                    type="primary"
+                    size='large'
+                    icon={<FileOutlined />}
+                    onClick={handleOpenGeoloniaStyle}
+                    data-testid="open-geolonia-style-button"
+                  >
+                    Geolonia 標準スタイルを開く
+                  </Button>
+                  <Text type="secondary" style={{ fontSize: 12 }}>Geoloniaの基本地図スタイルで始める</Text>
+                </Flex>
+                <Text strong style={{ margin: '8px 0' }}>OR</Text>
+                <Flex vertical align='center' gap={4}>
+                  <Button
+                    type="default"
+                    size='large'
+                    icon={<FileOutlined />}
+                    onClick={handleOpenSampleStyle}
+                    data-testid="open-sample-style-button"
+                  >
+                    サンプルスタイルを開く
+                  </Button>
+                  <Text type="secondary" style={{ fontSize: 12 }}>デモ用のシンプルなスタイルで試す</Text>
+                </Flex>
+                <Text strong style={{ margin: '8px 0' }}>OR</Text>
+                <Flex vertical align='center' gap={4} style={{ width: '100%', maxWidth: 400 }}>
+                  <Flex align='center' gap={6}>
+                    <LinkOutlined />
+                    <Text strong>URLから読み込む</Text>
+                  </Flex>
+                  <StyleUrlLoader setLoadError={setLoadError} />
+                  <Text type="secondary" style={{ fontSize: 12 }}>スタイルJSONのURLを貼り付けてください</Text>
+                </Flex>
+                <Text strong style={{ margin: '8px 0' }}>OR</Text>
+                <Flex vertical align='center' gap={4}>
+                  <Flex align='center' gap={6}>
+                    <FolderOpenOutlined />
+                    <Text strong>ファイルから読み込む</Text>
+                  </Flex>
+                  <FileImporter setLoadError={setLoadError} />
+                  <Text type="secondary" style={{ fontSize: 12 }}>お手持ちのJSONファイルをアップロード</Text>
+                </Flex>
               </Flex>
             }
           </Content>

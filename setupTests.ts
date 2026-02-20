@@ -1,3 +1,12 @@
+// ResizeObserverのモック (react-window等で使用)
+if (!window.ResizeObserver) {
+  window.ResizeObserver = class ResizeObserver {
+    observe = jest.fn();
+    unobserve = jest.fn();
+    disconnect = jest.fn();
+  };
+}
+
 // window.matchMediaのモック
 if (!window.matchMedia) {
   window.matchMedia = function () {

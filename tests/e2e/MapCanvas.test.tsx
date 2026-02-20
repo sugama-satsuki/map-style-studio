@@ -3,32 +3,24 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import MapCanvas from '../../src/components/MapCanvas/MapCanvas';
 
-// maplibreglのグローバルモック
-// const mockSetStyle = jest.fn();
-
 jest.mock('maplibre-gl', () => ({
   Map: function () {
     return {
       on: jest.fn(),
+      once: jest.fn(),
+      off: jest.fn(),
       remove: jest.fn(),
       addControl: jest.fn(),
       getContainer: jest.fn(),
+      getCenter: jest.fn(() => ({ lng: 139.767, lat: 35.681 })),
+      getZoom: jest.fn(() => 10),
     };
   },
 }));
 
 describe('MapCanvas', () => {
-
-  test('MapCanvasコンポーネントがレンダリングされ、マップ用のdivが存在する', () => {
+  test('マップ用のdivが存在する', () => {
     render(<MapCanvas />);
-    // MapCanvas内で map を描画するdiv の data-testid を "map-container" などで付与しておくと良い
     expect(screen.getByTestId('map-container')).toBeInTheDocument();
   });
-
-//   test('style.jsonがmaplibre-glのmapにセットされる', () => {
-//     render(<MapCanvas style={styleJson} />);
-//     // styleJsonがsetStyleに渡されているか確認
-//     expect(mockSetStyle).toHaveBeenCalledWith(styleJson);
-//   });
-
 });
