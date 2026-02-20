@@ -1,4 +1,4 @@
-import { generateCategoryColorStyle, CategoryColors } from '../../src/utils/generateCategoryColorStyle';
+import { generateCategoryColorStyle, CategoryColors } from '../generateCategoryColorStyle';
 import type { StyleSpecification } from 'maplibre-gl';
 
 describe('generateCategoryColorStyle', () => {

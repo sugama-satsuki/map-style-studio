@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Collapse, Flex, Tooltip, Button, Input, Typography } from 'antd';
 import { EditOutlined, CheckOutlined, CloseOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { LayerSpecification } from 'maplibre-gl';
-import { useColorfulJson } from '../../utils/renderColorfulJson';
+import { useColorfulJson } from '../../lib/renderColorfulJson';
 
 const { Text } = Typography;
 

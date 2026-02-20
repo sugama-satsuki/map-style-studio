@@ -3,7 +3,7 @@ import { BgColorsOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons
 import { useState } from "react";
 import { useAtom } from "jotai";
 import { styleAtom } from "../../atom";
-import { generateStyleFromTheme } from "../../utils/generateStyleFromTheme";
+import { generateStyleFromTheme } from "../../lib/generateStyleFromTheme";
 
 type ColorProps = {
     savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void

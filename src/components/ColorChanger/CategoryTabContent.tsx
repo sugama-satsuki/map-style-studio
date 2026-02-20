@@ -3,7 +3,7 @@ import { BgColorsOutlined } from '@ant-design/icons';
 import { useState } from "react";
 import { useAtom } from "jotai";
 import { styleAtom } from "../../atom";
-import { generateCategoryColorStyle, type CategoryColors } from "../../utils/generateCategoryColorStyle";
+import { generateCategoryColorStyle, type CategoryColors } from "../../lib/generateCategoryColorStyle";
 
 type CategoryColorProps = {
     savePrevStyle: (newStyle: maplibregl.StyleSpecification | undefined) => void

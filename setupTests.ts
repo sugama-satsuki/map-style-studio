@@ -5,18 +5,18 @@ if (!window.matchMedia) {
       matches: false,
       media: '',
       onchange: null,
-      addListener: jest.fn(), // deprecated
-      removeListener: jest.fn(), // deprecated
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
+      addListener: vi.fn(), // deprecated
+      removeListener: vi.fn(), // deprecated
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
     };
   };
 }
 
 // window.URL.createObjectURLのモック
 if (!window.URL.createObjectURL) {
-  window.URL.createObjectURL = jest.fn();
+  window.URL.createObjectURL = vi.fn();
 }
 
 // performance.mark/performance.measureのモック
@@ -35,8 +35,7 @@ if (!window.performance.mark) {
   };
 }
 if (!window.performance.measure) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  window.performance.measure = (measureName: string, _startOrMeasureOptions?: string | PerformanceMeasureOptions, endMark?: string): PerformanceMeasure => {
+  window.performance.measure = (measureName: string, _startOrMeasureOptions?: string | PerformanceMeasureOptions, _endMark?: string): PerformanceMeasure => {
     return {
       name: measureName,
       entryType: 'measure',

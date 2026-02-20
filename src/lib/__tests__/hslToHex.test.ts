@@ -1,4 +1,4 @@
-import { hslToHex } from '../../src/utils/generateStyleFromTheme';
+import { hslToHex } from '../colorHelpers';
 
 // hslをhexに変換する
 describe('hslToHex', () => {

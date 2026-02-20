@@ -1,4 +1,4 @@
-import { getBackgroundColor } from '../../src/utils/generateStyleFromTheme';
+import { getBackgroundColor } from '../generateStyleFromTheme';
 
 describe('getBackgroundColor', () => {
   it('赤系(#ff0000)は明度が上がる', () => {

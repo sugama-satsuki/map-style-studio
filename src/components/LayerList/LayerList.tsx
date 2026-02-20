@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Input, Spin } from 'antd';
 import { useAtom, useAtomValue } from 'jotai';
 import { mapAtom, styleAtom } from '../../atom';
-import { groupLayersByType } from '../../utils/layerControl';
+import { groupLayersByType } from '../../lib/layerControl';
 import LayerGroupPanel from './LayerGroupPanel';
-import { isLayerMatched } from '../../utils/searchHelpers';
+import { isLayerMatched } from '../../lib/searchHelpers';
 import {
   List,
   type RowComponentProps

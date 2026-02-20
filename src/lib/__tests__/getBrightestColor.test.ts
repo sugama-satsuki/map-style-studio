@@ -1,4 +1,4 @@
-import { getBrightestColor } from '../../src/utils/generateStyleFromTheme';
+import { getBrightestColor } from '../generateStyleFromTheme';
 
 describe('getBrightestColor', () => {
   it('黄色が一番明るい', () => {

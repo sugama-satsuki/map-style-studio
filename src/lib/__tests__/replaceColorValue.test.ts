@@ -1,4 +1,4 @@
-import { replaceColorValue } from '../../src/utils/generateStyleFromTheme';
+import { replaceColorValue } from '../generateStyleFromTheme';
 
 describe('replaceColorValue', () => {
   const themeColor = '#123456';

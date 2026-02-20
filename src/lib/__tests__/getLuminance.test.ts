@@ -1,4 +1,4 @@
-import { getLuminance } from '../../src/utils/generateStyleFromTheme';
+import { getLuminance } from '../generateStyleFromTheme';
 
 // 明るさの判定
 describe('getLuminance', () => {

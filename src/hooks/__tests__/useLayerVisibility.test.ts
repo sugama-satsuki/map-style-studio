@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { useLayerVisibility } from '../../src/hooks/useLayerVisibility';
+import { useLayerVisibility } from '../useLayerVisibility';
 import type maplibregl from 'maplibre-gl';
 
 // モックMapクラス
